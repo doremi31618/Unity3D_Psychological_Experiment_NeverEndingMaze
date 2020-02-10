@@ -321,6 +321,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: DustStorm
       objectReference: {fileID: 0}
+    - target: {fileID: 100000, guid: 1f7aa4d40edff6e48b549003cad031e1, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 400000, guid: 1f7aa4d40edff6e48b549003cad031e1, type: 3}
       propertyPath: m_LocalPosition.x
       value: 0
@@ -840,6 +844,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1206604363}
   - component: {fileID: 1206604362}
+  - component: {fileID: 1206604364}
   m_Layer: 0
   m_Name: GameManager
   m_TagString: Untagged
@@ -859,6 +864,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 581e0c9518bcf46c2845bfe93561ce9c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  Direction: 0
   player_boundary_visulizer: {fileID: 1655747920}
   maze_boundary_visulizer: {fileID: 1009197268}
   building_prefabs:
@@ -868,26 +874,9 @@ MonoBehaviour:
   building_interval: 10
   building_height: 0
   max_building_number: 100
-  isGUI: 1
+  isGUI: 0
   building_pool: []
   Player: {fileID: 0}
-  Direction: 0
-  maze_boundary:
-    North: {x: 0, y: 0, z: 0}
-    East: {x: 0, y: 0, z: 0}
-    West: {x: 0, y: 0, z: 0}
-    South: {x: 0, y: 0, z: 0}
-    center: {x: 0, y: 0, z: 0}
-    width: 0
-    height: 0
-  player_boundary:
-    North: {x: 0, y: 0, z: 0}
-    East: {x: 0, y: 0, z: 0}
-    West: {x: 0, y: 0, z: 0}
-    South: {x: 0, y: 0, z: 0}
-    center: {x: 0, y: 0, z: 0}
-    width: 0
-    height: 0
 --- !u!4 &1206604363
 Transform:
   m_ObjectHideFlags: 0
@@ -905,6 +894,22 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1206604364
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1206604361}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bb3d65934220846ca83298d019ad52cc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  total_length: 3
+  total_rotate_time: 0
+  isUseVisalizer: 1
+  isUseGUI: 1
 --- !u!1 &1288845034
 GameObject:
   m_ObjectHideFlags: 0
@@ -1281,7 +1286,7 @@ MonoBehaviour:
       colorBlindnessType: 0
       colorBlindnessStrength: 1
   m_Resources: {fileID: 11400000, guid: d82512f9c8e5d4a4d938b575d47f88d4, type: 2}
-  m_ShowToolkit: 0
+  m_ShowToolkit: 1
   m_ShowCustomSorter: 0
   breakBeforeColorGrading: 0
   m_BeforeTransparentBundles: []

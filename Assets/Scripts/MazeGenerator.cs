@@ -6,6 +6,7 @@ using System.Linq;
 
 public class MazeGenerator : MonoBehaviour
 {
+    public moveDirection Direction;
     [Header("GameObject content")]
     public GameObject player_boundary_visulizer;
     public GameObject maze_boundary_visulizer;
@@ -27,7 +28,7 @@ public class MazeGenerator : MonoBehaviour
     [HideInInspector] public GameObject Player;
 
     GameObject parents;
-    public moveDirection Direction;
+    
     public enum moveDirection
     {
         none,
@@ -36,10 +37,10 @@ public class MazeGenerator : MonoBehaviour
         forward,
         back
     }
-    public Boundary maze_boundary = new Boundary();
-    public Boundary player_boundary = new Boundary();
+    Boundary maze_boundary = new Boundary();
+    Boundary player_boundary = new Boundary();
 
-    [System.Serializable]
+    //[System.Serializable]
     public struct Boundary
     {
         public Vector3 North,East,West,South,center;
