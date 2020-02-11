@@ -22,7 +22,7 @@ public class MazeGenerator : MonoBehaviour
     public int max_building_number = 500;
 
     [Header("other attribute")]
-    public bool isGUI = true;
+    public bool isUnitTest = true;
 
     [HideInInspector] public List<GameObject> building_pool = new List<GameObject>();
     [HideInInspector] public GameObject Player;
@@ -295,7 +295,7 @@ public class MazeGenerator : MonoBehaviour
     }
     private void OnGUI()
     {
-        if(isGUI)
+        if(isUnitTest)
         {
             Rect _player_position = new Rect(100, 100, 300, 100);
             Rect _player_boundary = new Rect(100, 150, 300, 100);
