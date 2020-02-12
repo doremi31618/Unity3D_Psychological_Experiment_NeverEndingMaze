@@ -1,0 +1,62 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 78b2425a2284af743826c689403a4924, type: 3}
+  m_Name: Apply Height Fog
+  m_EditorClassIdentifier: 
+  m_functionInfo: "// Made with Amplify Shader Editor\n// Available at the Unity Asset
+    Store - http://u3d.as/y3X \n/*ASEBEGIN\nVersion=17101\n1927;29;1906;1014;1877.879;1305.417;1;True;False\nNode;AmplifyShaderEditor.RegisterLocalVarNode;30;-848,1536;Half;False;DirectionalMask;-1;True;1;0;FLOAT;0;False;1;FLOAT;0\nNode;AmplifyShaderEditor.SimpleMultiplyOpNode;29;-1408,256;Inherit;False;2;2;0;FLOAT;0;False;1;FLOAT;0;False;1;FLOAT;0\nNode;AmplifyShaderEditor.RegisterLocalVarNode;7;-864,2688;Half;False;NoiseDistanceMask;-1;True;1;0;FLOAT;0;False;1;FLOAT;0\nNode;AmplifyShaderEditor.GetLocalVarNode;4;-1664,1920;Inherit;False;2;WorldPosition;1;0;OBJECT;0;False;1;FLOAT3;0\nNode;AmplifyShaderEditor.FunctionNode;14;-1344,3072;Inherit;False;Fog
+    Noise;-1;;689;fe51dc291bbca2147aa47de2202288d1;0;2;22;FLOAT3;0,0,0;False;23;FLOAT;0;False;1;FLOAT;0\nNode;AmplifyShaderEditor.GetLocalVarNode;3;-1664,2688;Inherit;False;2;WorldPosition;1;0;OBJECT;0;False;1;FLOAT3;0\nNode;AmplifyShaderEditor.SimpleMultiplyOpNode;43;-384,256;Inherit;False;2;2;0;FLOAT;0;False;1;FLOAT;0;False;1;FLOAT;0\nNode;AmplifyShaderEditor.StaticSwitch;45;-512,-256;Float;False;Property;AHF_DirectionalMode;AHF_DirectionalMode;11;0;Create;False;0;0;False;0;1;0;0;False;;KeywordEnum;2;Off;On;Create;False;9;1;FLOAT3;0,0,0;False;0;FLOAT3;0,0,0;False;2;FLOAT3;0,0,0;False;3;FLOAT3;0,0,0;False;4;FLOAT3;0,0,0;False;5;FLOAT3;0,0,0;False;6;FLOAT3;0,0,0;False;7;FLOAT3;0,0,0;False;8;FLOAT3;0,0,0;False;1;FLOAT3;0\nNode;AmplifyShaderEditor.FunctionNode;20;-1408,1536;Inherit;False;Fog
+    Directional;-1;;685;b76195d9ca3254b49ac2428d15088cd6;0;1;15;FLOAT3;0,0,0;False;1;FLOAT;0\nNode;AmplifyShaderEditor.StaticSwitch;42;-1024,256;Float;False;Property;AHF_NoiseMode;AHF_NoiseMode;14;0;Create;False;0;0;False;0;1;0;0;False;;KeywordEnum;2;Off;Procedural3D;Create;False;9;1;FLOAT;0;False;0;FLOAT;0;False;2;FLOAT;0;False;3;FLOAT;0;False;4;FLOAT;0;False;5;FLOAT;0;False;6;FLOAT;0;False;7;FLOAT;0;False;8;FLOAT;0;False;1;FLOAT;0\nNode;AmplifyShaderEditor.FunctionNode;6;-1408,1920;Inherit;False;Fog
+    Distance;-1;;695;a5f090963b8f9394a984ee752ce42488;0;1;13;FLOAT3;0,0,0;False;1;FLOAT;0\nNode;AmplifyShaderEditor.GetLocalVarNode;35;-1664,128;Inherit;False;30;DirectionalMask;1;0;OBJECT;0;False;1;FLOAT;0\nNode;AmplifyShaderEditor.GetLocalVarNode;84;-1664,-672;Inherit;False;65;FogColor;1;0;OBJECT;0;False;1;FLOAT3;0\nNode;AmplifyShaderEditor.SwizzleNode;32;-1408,-256;Inherit;False;FLOAT3;0;1;2;3;1;0;COLOR;0,0,0,0;False;1;FLOAT3;0\nNode;AmplifyShaderEditor.FunctionInput;81;-1664,-768;Inherit;False;;3;0;False;1;0;FLOAT3;0,0,0;False;1;FLOAT3;0\nNode;AmplifyShaderEditor.GetLocalVarNode;83;-1664,-576;Inherit;False;66;FogAlpha;1;0;OBJECT;0;False;1;FLOAT;0\nNode;AmplifyShaderEditor.GetLocalVarNode;9;-1664,3072;Inherit;False;2;WorldPosition;1;0;OBJECT;0;False;1;FLOAT3;0\nNode;AmplifyShaderEditor.GetLocalVarNode;15;-1664,1536;Inherit;False;2;WorldPosition;1;0;OBJECT;0;False;1;FLOAT3;0\nNode;AmplifyShaderEditor.RegisterLocalVarNode;16;-848,2304;Half;False;FogHeightMask;-1;True;1;0;FLOAT;0;False;1;FLOAT;0\nNode;AmplifyShaderEditor.LerpOp;82;-1344,-640;Inherit;False;3;0;FLOAT3;0,0,0;False;1;FLOAT3;0,0,0;False;2;FLOAT;0;False;1;FLOAT3;0\nNode;AmplifyShaderEditor.GetLocalVarNode;28;-1664,416;Inherit;False;24;NoiseSimplex3D;1;0;OBJECT;0;False;1;FLOAT;0\nNode;AmplifyShaderEditor.GetLocalVarNode;8;-1664,2304;Inherit;False;2;WorldPosition;1;0;OBJECT;0;False;1;FLOAT3;0\nNode;AmplifyShaderEditor.SimpleMultiplyOpNode;37;-1216,384;Inherit;False;2;2;0;FLOAT;0;False;1;FLOAT;0;False;1;FLOAT;0\nNode;AmplifyShaderEditor.RegisterLocalVarNode;66;-192,256;Half;False;FogAlpha;-1;True;1;0;FLOAT;0;False;1;FLOAT;0\nNode;AmplifyShaderEditor.LerpOp;40;-704,-128;Inherit;False;3;0;FLOAT3;0,0,0;False;1;FLOAT3;0,0,0;False;2;FLOAT;0;False;1;FLOAT3;0\nNode;AmplifyShaderEditor.WorldPosInputsNode;1;-1664,1152;Float;False;0;4;FLOAT3;0;FLOAT;1;FLOAT;2;FLOAT;3\nNode;AmplifyShaderEditor.ColorNode;23;-1664,-64;Half;False;Global;AHF_DirectionalColor;AHF_DirectionalColor;12;0;Create;False;0;0;False;0;1,0.6300203,0.1617647,0;1,0.5318966,0.25,1;True;0;5;COLOR;0;FLOAT;1;FLOAT;2;FLOAT;3;FLOAT;4\nNode;AmplifyShaderEditor.GetLocalVarNode;21;-1664,336;Inherit;False;16;FogHeightMask;1;0;OBJECT;0;False;1;FLOAT;0\nNode;AmplifyShaderEditor.RegisterLocalVarNode;24;-848,3072;Half;False;NoiseSimplex3D;-1;True;1;0;FLOAT;0;False;1;FLOAT;0\nNode;AmplifyShaderEditor.GetLocalVarNode;19;-1664,256;Inherit;False;12;FogDistanceMask;1;0;OBJECT;0;False;1;FLOAT;0\nNode;AmplifyShaderEditor.SwizzleNode;31;-1408,-64;Inherit;False;FLOAT3;0;1;2;3;1;0;COLOR;0,0,0,0;False;1;FLOAT3;0\nNode;AmplifyShaderEditor.GetLocalVarNode;10;-1664,3152;Inherit;False;7;NoiseDistanceMask;1;0;OBJECT;0;False;1;FLOAT;0\nNode;AmplifyShaderEditor.RegisterLocalVarNode;65;-192,-256;Half;False;FogColor;-1;True;1;0;FLOAT3;0,0,0;False;1;FLOAT3;0\nNode;AmplifyShaderEditor.FunctionNode;5;-1408,2688;Inherit;False;Fog
+    Noise Distance;-1;;681;b49331aa561bee84c8546167a63b6b58;0;1;18;FLOAT3;0,0,0;False;1;FLOAT;0\nNode;AmplifyShaderEditor.FunctionNode;33;-1216,-64;Inherit;False;Handle
+    Color Space;-1;;684;f6f44b689bae74d47a0885dbe3018c48;0;1;2;FLOAT3;0,0,0;False;1;FLOAT3;0\nNode;AmplifyShaderEditor.RangedFloatNode;39;-768,352;Half;False;Global;AHF_FogIntensity;AHF_FogIntensity;3;1;[HideInInspector];Create;False;0;0;False;0;1;1;0;1;0;1;FLOAT;0\nNode;AmplifyShaderEditor.RegisterLocalVarNode;12;-864,1920;Half;False;FogDistanceMask;-1;True;1;0;FLOAT;0;False;1;FLOAT;0\nNode;AmplifyShaderEditor.FunctionNode;13;-1408,2304;Inherit;False;Fog
+    Height;-1;;678;61a3ca69e0854664d87b5233acc9cbae;0;1;8;FLOAT3;0,0,0;False;1;FLOAT;0\nNode;AmplifyShaderEditor.ColorNode;26;-1664,-256;Half;False;Global;AHF_FogColor;AHF_FogColor;4;0;Create;False;0;0;False;0;0.4411765,0.722515,1,0;0,0.5827588,1,1;True;0;5;COLOR;0;FLOAT;1;FLOAT;2;FLOAT;3;FLOAT;4\nNode;AmplifyShaderEditor.RegisterLocalVarNode;2;-832,1152;Float;False;WorldPosition;-1;True;1;0;FLOAT3;0,0,0;False;1;FLOAT3;0\nNode;AmplifyShaderEditor.FunctionNode;34;-1216,-256;Inherit;False;Handle
+    Color Space;-1;;680;f6f44b689bae74d47a0885dbe3018c48;0;1;2;FLOAT3;0,0,0;False;1;FLOAT3;0\nNode;AmplifyShaderEditor.StaticSwitch;64;-1152,-768;Float;False;Property;AHF_Enabled;AHF_ENABLED;14;0;Create;False;0;0;False;0;1;0;0;False;AHF_ENABLED;Toggle;2;Off;On;Fetch;False;9;1;FLOAT3;0,0,0;False;0;FLOAT3;0,0,0;False;2;FLOAT3;0,0,0;False;3;FLOAT3;0,0,0;False;4;FLOAT3;0,0,0;False;5;FLOAT3;0,0,0;False;6;FLOAT3;0,0,0;False;7;FLOAT3;0,0,0;False;8;FLOAT3;0,0,0;False;1;FLOAT3;0\nNode;AmplifyShaderEditor.FunctionOutput;85;-896,-768;Inherit;False;True;;0;False;1;0;FLOAT3;0,0,0;False;1;FLOAT3;0\nNode;AmplifyShaderEditor.CommentaryNode;56;-1664,-896;Inherit;False;1663.196;100;Final
+    Pass;0;;0.684,1,0,1;0;0\nNode;AmplifyShaderEditor.CommentaryNode;60;-1664,2944;Inherit;False;1022.805;100;Noise;0;;0.7529412,1,0.7529412,1;0;0\nNode;AmplifyShaderEditor.CommentaryNode;59;-1664,1408;Inherit;False;1023.152;100;Directional
+    Light Support;0;;1,0.634,0.1617647,1;0;0\nNode;AmplifyShaderEditor.CommentaryNode;58;-1664,2560;Inherit;False;1022.526;100;Noise
+    Distance Mask;0;;0.7529412,1,0.7529412,1;0;0\nNode;AmplifyShaderEditor.CommentaryNode;57;-1664,2176;Inherit;False;1028.158;100;Fog
+    Height;0;;0,0.5882353,1,1;0;0\nNode;AmplifyShaderEditor.CommentaryNode;55;-1664,1024;Inherit;False;1024.716;100;World
+    Position;0;;0,1,0,1;0;0\nNode;AmplifyShaderEditor.CommentaryNode;61;-1664,1792;Inherit;False;1023.127;100;Fog
+    Distance;0;;0,0.5882353,1,1;0;0\nWireConnection;30;0;20;0\nWireConnection;29;0;19;0\nWireConnection;29;1;21;0\nWireConnection;7;0;5;0\nWireConnection;14;22;9;0\nWireConnection;14;23;10;0\nWireConnection;43;0;42;0\nWireConnection;43;1;39;0\nWireConnection;45;1;34;0\nWireConnection;45;0;40;0\nWireConnection;20;15;15;0\nWireConnection;42;1;29;0\nWireConnection;42;0;37;0\nWireConnection;6;13;4;0\nWireConnection;32;0;26;0\nWireConnection;16;0;13;0\nWireConnection;82;0;81;0\nWireConnection;82;1;84;0\nWireConnection;82;2;83;0\nWireConnection;37;0;29;0\nWireConnection;37;1;28;0\nWireConnection;66;0;43;0\nWireConnection;40;0;34;0\nWireConnection;40;1;33;0\nWireConnection;40;2;35;0\nWireConnection;24;0;14;0\nWireConnection;31;0;23;0\nWireConnection;65;0;45;0\nWireConnection;5;18;3;0\nWireConnection;33;2;31;0\nWireConnection;12;0;6;0\nWireConnection;13;8;8;0\nWireConnection;2;0;1;0\nWireConnection;34;2;32;0\nWireConnection;64;1;81;0\nWireConnection;64;0;82;0\nWireConnection;85;0;64;0\nASEEND*/\n//CHKSM=9E78872FE0C7A46A6AAE208B581ABA60012D7EC7"
+  m_functionName: 
+  m_description: "Use this function to apply fog on transparent or custom UI shaders
+    made with Amplify Shader Editor. \n\no Surface Shaders\nWhen using Surface Shaders
+    or Lightweight PBR template, connect the function to the Emission port. If Emission
+    is used, pass the emission color through the Apply Height Fog node.\n\no Fragment
+    Shaders:\nWhen Unlit or custom UI shaders are used, pass the final color through
+    the Apply Height Fog node.\n"
+  m_additionalIncludes:
+    m_additionalIncludes: []
+    m_outsideIncludes: []
+  m_additionalPragmas:
+    m_additionalPragmas: []
+    m_outsidePragmas: []
+  m_additionalDirectives:
+    m_validData: 0
+    m_isDirty: 1
+    m_moduleName: ' Additional Directives'
+    m_independentModule: 1
+    m_additionalDirectives:
+    - {fileID: 0}
+    m_shaderFunctionDirectives: []
+    m_nativeDirectives: []
+    m_nativeDirectivesIndex: -1
+    m_nativeDirectivesFoldout: 0
+    m_directivesSaveItems:
+    - LineType: 2
+      LineValue: multi_compile __ AHF_ENABLED
+      GUIDToggle: 0
+      GUIDValue: 
+      Origin: 2
+  m_nodeCategory: 3
+  m_customNodeCategory: 
+  m_previewPosition: 0
+  m_hidden: 0

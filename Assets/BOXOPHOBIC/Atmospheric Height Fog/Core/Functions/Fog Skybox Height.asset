@@ -1,0 +1,39 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 78b2425a2284af743826c689403a4924, type: 3}
+  m_Name: Fog Skybox Height
+  m_EditorClassIdentifier: 
+  m_functionInfo: "// Made with Amplify Shader Editor\n// Available at the Unity Asset
+    Store - http://u3d.as/y3X \n/*ASEBEGIN\nVersion=17008\n282;313;1225;715;1444.113;293.9357;1.3;True;False\nNode;AmplifyShaderEditor.FunctionNode;16;-1024,96;Inherit;False;const;-1;;552;5b64729fb717c5f49a1bc2dab81d5e1c;1,3,1;0;1;FLOAT;0\nNode;AmplifyShaderEditor.SaturateNode;15;-896,0;Inherit;False;1;0;FLOAT;0;False;1;FLOAT;0\nNode;AmplifyShaderEditor.RangedFloatNode;14;-1216,192;Half;False;Global;AHF_SkyboxFogFill;AHF_SkyboxFogFill;9;0;Create;False;0;0;False;0;0;0;0;1;0;1;FLOAT;0\nNode;AmplifyShaderEditor.RegisterLocalVarNode;18;-512,0;Half;False;SkyboxFogHeightMask;-1;True;1;0;FLOAT;0;False;1;FLOAT;0\nNode;AmplifyShaderEditor.FunctionInput;19;-1920,0;Inherit;False;WorldPosition;3;0;False;1;0;FLOAT3;0,0,0;False;1;FLOAT3;0\nNode;AmplifyShaderEditor.LerpOp;17;-704,80;Inherit;False;3;0;FLOAT;0;False;1;FLOAT;0;False;2;FLOAT;0;False;1;FLOAT;0\nNode;AmplifyShaderEditor.AbsOpNode;10;-1392,0;Inherit;False;1;0;FLOAT;0;False;1;FLOAT;0\nNode;AmplifyShaderEditor.SwizzleNode;9;-1536,0;Inherit;False;FLOAT;1;1;2;3;1;0;FLOAT3;0,0,0;False;1;FLOAT;0\nNode;AmplifyShaderEditor.NormalizeNode;8;-1696,0;Inherit;False;1;0;FLOAT3;0,0,0;False;1;FLOAT3;0\nNode;AmplifyShaderEditor.FunctionNode;13;-1216,0;Inherit;False;Remap
+    To 0-1;-1;;550;5eda8a2bb94ebef4ab0e43d19291cd8b;0;3;6;FLOAT;0;False;7;FLOAT;0;False;8;FLOAT;0;False;1;FLOAT;0\nNode;AmplifyShaderEditor.FunctionNode;12;-1408,128;Inherit;False;const;-1;;547;5b64729fb717c5f49a1bc2dab81d5e1c;1,3,0;0;1;FLOAT;0\nNode;AmplifyShaderEditor.RangedFloatNode;11;-1920,128;Half;False;Global;AHF_SkyboxFogHeight;AHF_SkyboxFogHeight;8;0;Create;False;0;0;False;0;1;1;0;1;0;1;FLOAT;0\nNode;AmplifyShaderEditor.FunctionOutput;0;-256,0;Inherit;False;True;SkyboxFogHeightMask;0;False;1;0;FLOAT;0;False;1;FLOAT;0\nWireConnection;15;0;13;0\nWireConnection;18;0;17;0\nWireConnection;17;0;15;0\nWireConnection;17;1;16;0\nWireConnection;17;2;14;0\nWireConnection;10;0;9;0\nWireConnection;9;0;8;0\nWireConnection;8;0;19;0\nWireConnection;13;6;10;0\nWireConnection;13;7;11;0\nWireConnection;13;8;12;0\nWireConnection;0;0;17;0\nASEEND*/\n//CHKSM=B750D32372D1F83D8D8E83E2617CDA4A071E9097"
+  m_functionName: 
+  m_description: 
+  m_additionalIncludes:
+    m_additionalIncludes: []
+    m_outsideIncludes: []
+  m_additionalPragmas:
+    m_additionalPragmas: []
+    m_outsidePragmas: []
+  m_additionalDirectives:
+    m_validData: 0
+    m_isDirty: 0
+    m_moduleName: ' Additional Directives'
+    m_independentModule: 1
+    m_additionalDirectives: []
+    m_shaderFunctionDirectives: []
+    m_nativeDirectives: []
+    m_nativeDirectivesIndex: -1
+    m_nativeDirectivesFoldout: 0
+    m_directivesSaveItems: []
+  m_nodeCategory: 3
+  m_customNodeCategory: 
+  m_previewPosition: 0
+  m_hidden: 0
