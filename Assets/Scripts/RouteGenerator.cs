@@ -15,8 +15,8 @@ public class RouteGenerator : MonoBehaviour
     public bool isUnitTest = true;
 
 
-    public List<Route> route_collection;
-    public Route get_CurrentRoute{ get{ return route_collection[route_collection.Count - 1]; } }
+   [SerializeField]Route current_route;
+    public Route get_CurrentRoute{ get{ return current_route; } }
 
     MazeGenerator m_maze;
     LineRenderer m_lineRenderer;
@@ -24,11 +24,11 @@ public class RouteGenerator : MonoBehaviour
     public void Start()
     {
         //intital attributes
-        route_collection = new List<Route>();
         m_maze = GetComponent<MazeGenerator>();
         m_lineRenderer = GetComponent<LineRenderer>();
 
-        Generate();
+        //generate at first 
+        //Generate();
     }
     
 
@@ -45,13 +45,11 @@ public class RouteGenerator : MonoBehaviour
         Vector3 playerPosition = m_maze.Player.transform.position;
         Vector3 firstDirection = Vector3.forward;
 
-        Route new_route = new Route(total_length, total_rotate_time, firstDirection, playerPosition, interval);
-        if (isUseVisalizer)
-        {
-            RouteVisualizer(new_route);
-            m_lineRenderer.enabled = isUseVisalizer;
-        }
-        route_collection.Add(new_route);
+        current_route  = new Route(total_length, total_rotate_time, firstDirection, playerPosition, interval);
+
+        m_lineRenderer.enabled = isUseVisalizer;
+        if (isUseVisalizer) RouteVisualizer(current_route);
+
     }
 
     private void OnGUI()
@@ -97,6 +95,7 @@ public class Route
     public Vector3[] route_direction;
     public Vector3[] route_vertex;
 
+    public Route getBackTravelRoute { get { return backTravelRouteGenerator();  } }
     public bool[] get_route { get { return route; } }
     public Vector3[] get_route_direction { get { return route_direction; } }
     public Vector3[] get_route_vertex { get { return route_vertex; } }
@@ -174,6 +173,13 @@ public class Route
             route_direction[i] = dir;
             
         }
+    }
+    Route backTravelRouteGenerator()
+    {
+        Vector3 back_route_pos = new Vector3();
+        Vector3 back_route_firstDir = new Vector3();
+        Route back_route = new Route(total_length, total_rotate_time, back_route_firstDir, back_route_pos,interval);
+        return back_route;
     }
 
     //"true" is mean we need to rotate

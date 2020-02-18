@@ -1,7 +1,6 @@
 ﻿using UnityEngine;
 using System.Diagnostics;
-using UnityEngine.UI;
-
+//using UnityEngine.UI;
 namespace TrueClouds
 {
     public class FPSDisplay : MonoBehaviour
