@@ -126,7 +126,11 @@ public class GameManager : MonoBehaviour
     //record player current position & choise made by player 
     void PlayerChooseDirection(int dir)
     {
+        //record player choise
+        //m_recorder.re
 
+        //unlock pause
+        player.CancelPause();
     }
 
     void GoBack()
