@@ -14,7 +14,10 @@ public class PlayerDataRecorder : MonoBehaviour
         if (player_name == "") player_name = DateTime.Now + "_Tester";
         playerData = new PlayerData(player_name);
     }
-
+    public void ChangePlayerName(string name)
+    {
+        playerData.player_name = name;
+    }
     public void RecordRouteData(Route route)
 	{
         playerData.PlayerDataGenerator(route);

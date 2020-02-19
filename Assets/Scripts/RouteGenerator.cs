@@ -1,7 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-
+using System;
 [RequireComponent(typeof(MazeGenerator),typeof(LineRenderer))]
 public class RouteGenerator : MonoBehaviour
 {
@@ -16,7 +16,15 @@ public class RouteGenerator : MonoBehaviour
 
 
    [SerializeField]Route current_route;
-    public Route get_CurrentRoute{ get{ return current_route; } }
+    public Route get_CurrentRoute{
+        get{
+            return current_route;
+        }
+        set
+        {
+            current_route = value;
+        }
+    }
 
     MazeGenerator m_maze;
     LineRenderer m_lineRenderer;
@@ -76,31 +84,38 @@ public class RouteGenerator : MonoBehaviour
 
 }
 [System.Serializable]
-public class Route
+public class Route : ICloneable
 {
+    //input value
     int total_length;
     int total_rotate_time;
-
-    //for outside read 
-    public int get_total_length{get { return total_length; }}
-    public int get_rotate_length { get { return total_rotate_time; } }
-
-    //input value
     Vector3 first_dir;
     Vector3 first_position;
     float interval;
+    public bool isRotateInFirstTime;
 
-    //output value
-    public bool[] route;
-    public Vector3[] route_direction;
-    public Vector3[] route_vertex;
+    //go route value
+    [SerializeField] bool[] route;
+    [SerializeField] Vector3[] route_direction;
+    [SerializeField] Vector3[] route_vertex;
 
-    public Route getBackTravelRoute { get { return backTravelRouteGenerator();  } }
+    //for outside call - get Array List
     public bool[] get_route { get { return route; } }
     public Vector3[] get_route_direction { get { return route_direction; } }
     public Vector3[] get_route_vertex { get { return route_vertex; } }
 
-    public bool isRotateInFirstTime;
+    //for outside call - get route attribute
+    public int get_total_length { get { return get_route.Length; } }
+    public int get_rotate_length {
+        get {
+            return total_rotate_time;
+        }
+        set
+        {
+            total_rotate_time = value;
+        }
+    }
+
     public Route(int _length, int _rotate_time,Vector3 _first_dir, Vector3 _first_pos, float _interval)
     {
         total_length = _length;
@@ -116,6 +131,7 @@ public class Route
 
         RouteGenerator();
     }
+
 
     public void RouteGenerator()
     {
@@ -159,7 +175,7 @@ public class Route
                     //true : turn right
                     //false : turn left
                     //randon determin turn_left of turn right;
-                    bool random_range = Random.value >= 0.5f;
+                    bool random_range = UnityEngine.Random.value >= 0.5f;
 
                     dir = random_range ?
                         Vector3.Cross(last_dir, Vector3.up) :
@@ -174,25 +190,63 @@ public class Route
             
         }
     }
-    Route backTravelRouteGenerator()
-    {
-        Vector3 back_route_pos = new Vector3();
-        Vector3 back_route_firstDir = new Vector3();
-        Route back_route = new Route(total_length, total_rotate_time, back_route_firstDir, back_route_pos,interval);
-        return back_route;
-    }
+    
 
     //"true" is mean we need to rotate
     //"false" is mean we need to go straight
     bool DeterminRotateOrStraight(ref int _straight,ref int _rotate)
     {
-        int range = Random.Range(0, _straight + _rotate);
+        int range = UnityEngine.Random.Range(0, _straight + _rotate);
 
         if(range > _rotate) _straight -= 1;
         else  _rotate -= 1;
 
         return (range <= _rotate);
 
+    }
+
+    public void back_RouteGenerator()
+    {
+        reverseArray(ref route_vertex, 0, route_vertex.Length-1);
+        reverseArray(ref route_direction, 0, route_direction.Length-1);
+
+        for (int i=0;i< route_direction.Length;i++)
+        {
+            route_direction[i] = new Vector3(-route_direction[i].x, route_direction[i].y, -route_direction[i].z);
+        }
+    }
+
+    void reverseArray(ref Vector3[] arr,int start, int end)
+    {
+        Vector3 temp;
+
+        while (start < end)
+        {
+            temp = arr[start];
+            arr[start] = arr[end];
+            arr[end] = temp;
+            start++;
+            end--;
+        }
+    }
+    public object Clone()
+    {
+        return this.MemberwiseClone();
+    }
+
+    public void ResetRoute(int _rotateTimes,bool[] _route, Vector3[] _direction, Vector3[] _vertex)
+    {
+        _route.CopyTo(route,0);
+        _direction.CopyTo(route_direction, 0);
+        _vertex.CopyTo(route_vertex, 0);
+        total_rotate_time = _rotateTimes;
+        total_length = route.Length;
+    }
+    public Route DeepClone()
+    {
+        Route new_route = new Route(total_length, total_rotate_time, Vector3.zero, Vector3.zero, interval);
+        new_route.ResetRoute(total_rotate_time, route, route_direction, route_vertex);
+        return new_route;
     }
 
 }

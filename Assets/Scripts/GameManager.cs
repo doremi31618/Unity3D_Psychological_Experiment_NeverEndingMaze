@@ -19,6 +19,9 @@ public class GameManager : MonoBehaviour
 
     public Button goTravel;
     public Button backButton;
+    public Button leftButton;
+    public Button rightButton;
+
 
     public bool isUseGUI = true;
 
@@ -43,23 +46,48 @@ public class GameManager : MonoBehaviour
         ListenPlayerState();
     }
 
+    //need to optimized 
     void ListenPlayerState()
     {
         if (goTravel != null && backButton != null)
         {
-            switch (player.isOnJourney)
+            //if(player.journeyType==)
+            switch (player.journeyType)
             {
 
-                case JourneyStage.Start:
-                    goTravel.interactable = true;
-                    backButton.interactable = false;
+                case JourneyType.go:
+                    if (player.isOnJourney == JourneyStage.OnJourney ||
+                       player.isOnJourney == JourneyStage.OnJourney_goStraight ||
+                       player.isOnJourney == JourneyStage.OnJourney_onPause ||
+                       player.isOnJourney == JourneyStage.OnJourney_turnAround)
+                    {
+                        goTravel.interactable = false;
+                        backButton.interactable = false;
+                    }
+                    else
+                    {
+                        goTravel.interactable = true;
+                        backButton.interactable = false;
+                    }
+                   
                     break;
 
-                case JourneyStage.end:
-                    backButton.interactable = true;
-                    goTravel.interactable = false;
+                case JourneyType.back:
+                    if (player.isOnJourney == JourneyStage.OnJourney ||
+                      player.isOnJourney == JourneyStage.OnJourney_goStraight ||
+                      player.isOnJourney == JourneyStage.OnJourney_onPause ||
+                      player.isOnJourney == JourneyStage.OnJourney_turnAround)
+                    {
+                        goTravel.interactable = false;
+                        backButton.interactable = false;
+                    }
+                    else
+                    {
+                        backButton.interactable = true;
+                        goTravel.interactable = false;
+                        
+                    }
                     break;
-
                 default://JourneyStage.OnJourney || JourneyStage.OnJourney_onPause || JourneyStage.OnJourney_turnAround
                     goTravel.interactable = false;
                     backButton.interactable = false;
@@ -83,10 +111,32 @@ public class GameManager : MonoBehaviour
         
     }
 
+    //player control event - choose left direciton 
+    void left_direction()
+    {
+        PlayerChooseDirection(1);
+    }
+
+    //player control event - choose right direciton 
+    void right_direction()
+    {
+        PlayerChooseDirection(-1);
+    }
+
+    //record player current position & choise made by player 
+    void PlayerChooseDirection(int dir)
+    {
+
+    }
+
     void GoBack()
     {
-        player.startJourney(m_route_collector.get_CurrentRoute.getBackTravelRoute,JourneyType.back);
+        m_route_collector.get_CurrentRoute = m_route_collector.get_CurrentRoute.DeepClone();
+        m_route_collector.get_CurrentRoute.back_RouteGenerator();
         
+        
+        //m_route_collector.get_CurrentRoute
+        player.startJourney(m_route_collector.get_CurrentRoute, JourneyType.back);
     }
 
     void Generate()

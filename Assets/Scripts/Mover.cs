@@ -11,8 +11,10 @@ public class Mover : MonoBehaviour
     [Range(0, 5)] public float turnSpeed = 1;
     [Range(0, 5)] public float moveSpeed = 1;
 
+    [Tooltip("暫停有沒有時間限制")] public bool isTimelimitPause = false;
+    [Tooltip("暫停時：時間倒數幾秒開始")] public float PauseTime = 5f;
+
     Route current_route;
-    Route back_route;
 
     float pauseTimer = 0f;
     float _position;//the position record
@@ -36,12 +38,16 @@ public class Mover : MonoBehaviour
     {
         _move();
     }
+    #region main function
     public void startJourney(Route _route, JourneyType journeyType)
     {
+
         current_route = _route;
+        _journeyType = journeyType;
 
         totalDestinationNumber = current_route.get_route_vertex.Length;
-        transform.forward = current_route.get_route_direction[0];
+
+        if(_journeyType == JourneyType.go) transform.forward = current_route.get_route_direction[0];
         transform.position = current_route.get_route_vertex[0];
 
         _position = 0f;
@@ -52,23 +58,45 @@ public class Mover : MonoBehaviour
         journey_stage = JourneyStage.Start;
     }
 
+    public void _move()
+    {
+
+
+        //check if ending
+        isTraveling();
+        if (current_route == null) return;
+        int direction_index = previousPositionIndex < current_route.get_route_direction.Length ? previousPositionIndex : current_route.get_route_direction.Length - 1;
+
+        move_checkStatus(direction_index);
+        move_stateMachine();
+
+
+    }
+    #endregion
+
+    #region sub function
     public void isTraveling()
     {
         if (current_route == null) return;
 
+        //double check index is correct
         //------------------------------------------------------------------------------------
+
         int index = previousPositionIndex + 1;
         if (current_route.get_route_vertex.Length - 1 < previousPositionIndex + 1) index -= 1;
 
         Vector3 nextPosition = current_route.get_route_vertex[index];
         float distanceToEndingPosition = Vector3.Distance(transform.position, nextPosition);
-
-        //setting journey stage processing
-        journey_stage = JourneyStage.OnJourney;
+        
+        journey_stage = JourneyStage.OnJourney;//setting journey stage processing
         //------------------------------------------------------------------------------------
 
+
+        //if player isn't arrive at end of route segment
         if (distanceToEndingPosition > 0.001f) return;
 
+        //if player at end of route segment
+        //------------------------------------------------------------------------------------
         _position = 0;
         _rotation = 0;
 
@@ -80,67 +108,34 @@ public class Mover : MonoBehaviour
 
             //setting journey stage end
             journey_stage = JourneyStage.end;
+            if (_journeyType == JourneyType.back)
+            {
+                _journeyType = JourneyType.go;
+            }else
+            {
+                _journeyType = JourneyType.back;
+            }
         }
         //check segment ending 
         else if (previousPositionIndex != totalDestinationNumber - 1)
         {
             //Debug.Log("Segment ending");
             previousPositionIndex = index;
+
+            //only pause when travel is back
+            
+            if(isNextStageIsTurn(getNextDirection()))PauseMove();
         }
 
-        
-    }
-
-    public void _move()
-    {
-        
-
-        //check if ending
-        isTraveling();
-        if (current_route == null) return;
-        int direction_index = previousPositionIndex < current_route.get_route_direction.Length ? previousPositionIndex : current_route.get_route_direction.Length - 1;
-
-        move_checkStatus(direction_index);
-        move_stateMachine();
-
-        /*
-        //turn around 
-        if (transform.forward != current_route.get_route_direction[direction_index])
-        {
-            //turn to right angle
-            Vector3 previous_direction = current_route.get_route_direction[previousPositionIndex-1];
-            Vector3 next_forward = current_route.get_route_direction[previousPositionIndex];
-
-            float speed = turnSpeed * Time.deltaTime;
-            _rotation += speed;
-            _rotation = Mathf.Clamp(_rotation, 0, 1);
-
-            transform.forward = Vector3.Slerp(previous_direction, next_forward, _rotation);
-        }
-        //go straight
-        else
-        {
-            //move
-            if (previousPositionIndex == current_route.get_route_vertex.Length - 1) return;
-
-            Vector3 previousPosition = current_route.get_route_vertex[previousPositionIndex];
-            Vector3 nextPosition = current_route.get_route_vertex[previousPositionIndex + 1];
-
-            float speed = moveSpeed * Time.deltaTime / (Vector3.Distance(previousPosition, nextPosition));
-            _position += speed;
-            _position = Mathf.Clamp(_position, 0, 1);
-
-            transform.position = Vector3.Lerp(previousPosition, nextPosition, _position);
-            //rigidbody.MovePosition(Vector3.Lerp(previousPosition, nextPosition, _position));
-        }
-        */
-        
+        //------------------------------------------------------------------------------------
 
     }
     void move_checkStatus(int direction_index)
     {
+        //if player at begin or end of journey
         if (journey_stage != JourneyStage.OnJourney) return;
 
+        //check if the conditions are met
         bool isNeedToTurn = transform.forward != current_route.get_route_direction[direction_index];
         bool isPause = pauseTimer > 0.001 || pauseTimer == -1;
 
@@ -149,44 +144,89 @@ public class Mover : MonoBehaviour
         else journey_stage = JourneyStage.OnJourney_goStraight;
 
     }
-    
+
     void move_stateMachine()
     {
-        switch(journey_stage)
+        switch (journey_stage)
         {
             case JourneyStage.OnJourney_goStraight:
-                //move
-                if (previousPositionIndex == current_route.get_route_vertex.Length - 1) return;
-
-                Vector3 previousPosition = current_route.get_route_vertex[previousPositionIndex];
-                Vector3 nextPosition = current_route.get_route_vertex[previousPositionIndex + 1];
-
-                float speed = moveSpeed * Time.deltaTime / (Vector3.Distance(previousPosition, nextPosition));
-                _position += speed;
-                _position = Mathf.Clamp(_position, 0, 1);
-
-                transform.position = Vector3.Lerp(previousPosition, nextPosition, _position);
+                go_straight(previousPositionIndex);
                 break;
 
             case JourneyStage.OnJourney_turnAround:
-                //turn to right angle
-                Vector3 previous_direction = current_route.get_route_direction[previousPositionIndex - 1];
-                Vector3 next_forward = current_route.get_route_direction[previousPositionIndex];
-
-                float _speed = turnSpeed * Time.deltaTime;
-                _rotation += _speed;
-                _rotation = Mathf.Clamp(_rotation, 0, 1);
-
-                transform.forward = Vector3.Slerp(previous_direction, next_forward, _rotation);
+                do_rotate(previousPositionIndex);
                 break;
+
             case JourneyStage.OnJourney_onPause:
                 if (pauseTimer == -1) return;
                 else if (pauseTimer > 0.01) pauseTimer -= Time.deltaTime;
+                else CancelPause();
                 break;
 
             default:
                 break;
         }
     }
+    #endregion
+    #region utilities tool
+    void go_straight(int index)
+    {
+        //move
+        if (index == current_route.get_route_vertex.Length - 1) return;
+
+        Vector3 previousPosition = current_route.get_route_vertex[index];
+        Vector3 nextPosition = current_route.get_route_vertex[index + 1];
+
+        float speed = moveSpeed * Time.deltaTime / (Vector3.Distance(previousPosition, nextPosition));
+        _position += speed;
+        _position = Mathf.Clamp(_position, 0, 1);
+
+        transform.position = Vector3.Lerp(previousPosition, nextPosition, _position);
+
+    }
+
+    void do_rotate(int index)
+    {
+        //turn to right angle
+        //compare two direction
+        Vector3 next_forward = current_route.get_route_direction[index];
+        Vector3 previous_direction = index == 0 ?
+            new Vector3(-next_forward.x, next_forward.y, -next_forward.z) :
+            current_route.get_route_direction[index - 1];
+
+        //do roate 
+        float _speed = turnSpeed * Time.deltaTime;
+        _rotation += _speed;
+        _rotation = Mathf.Clamp(_rotation, 0, 1);
+
+        transform.forward = Vector3.Slerp(previous_direction, next_forward, _rotation);
+
+    }
+    bool isNextStageIsTurn(int direction_index)
+    {
+        return transform.forward != current_route.get_route_direction[direction_index]; ;
+    }
+    int getNextDirection()
+    {
+        return previousPositionIndex < current_route.get_route_direction.Length ? previousPositionIndex : current_route.get_route_direction.Length - 1;
+    }
+    #endregion
+    #region pause function
+    //when pause timer = 0 
+    public void CancelPause()
+    {
+        pauseTimer = 0f;
+    }
+
+    public void PauseMove()
+    {
+        if (journeyType != JourneyType.back) return;
+        if (isTimelimitPause) pauseTimer = PauseTime;
+        else pauseTimer = -1;
+
+    }
+    #endregion
+
+    
 
 }
