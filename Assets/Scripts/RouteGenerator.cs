@@ -96,11 +96,13 @@ public class Route : ICloneable
 
     //go route value
     [SerializeField] bool[] route;
+    [SerializeField] int[] player_choisies;// -1 :not choise ||  0:false || 1:correct
     [SerializeField] Vector3[] route_direction;
     [SerializeField] Vector3[] route_vertex;
 
     //for outside call - get Array List
     public bool[] get_route { get { return route; } }
+    public int[] get_player_choisies { get { return player_choisies; } }
     public Vector3[] get_route_direction { get { return route_direction; } }
     public Vector3[] get_route_vertex { get { return route_vertex; } }
 
@@ -115,6 +117,10 @@ public class Route : ICloneable
             total_rotate_time = value;
         }
     }
+    public void setPlayerChoise(int index, int playerChoise)
+    {
+        player_choisies[index] = playerChoise;
+    }
 
     public Route(int _length, int _rotate_time,Vector3 _first_dir, Vector3 _first_pos, float _interval)
     {
@@ -125,8 +131,12 @@ public class Route : ICloneable
         interval = _interval;
 
         route = new bool[total_length];
+        player_choisies = new int[total_length];
+        for(int i=0; i<player_choisies.Length;i++){player_choisies[i]= -1;}//init player choise
+        
         route_direction = new Vector3[total_length];
         route_vertex = new Vector3[total_length + 1];
+
         isRotateInFirstTime = false;
 
         RouteGenerator();
@@ -149,7 +159,7 @@ public class Route : ICloneable
                 //Debug.Log("straight times : " + _straight + " ; rotate times : " + _rotate);
                 route[i] = DeterminRotateOrStraight(ref _straight,ref _rotate);
             }
-
+            
         }
 
         for(int i=0; i< route.Length; i++)
@@ -242,6 +252,7 @@ public class Route : ICloneable
         total_rotate_time = _rotateTimes;
         total_length = route.Length;
     }
+
     public Route DeepClone()
     {
         Route new_route = new Route(total_length, total_rotate_time, Vector3.zero, Vector3.zero, interval);

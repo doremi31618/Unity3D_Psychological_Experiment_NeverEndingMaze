@@ -21,6 +21,31 @@ public class Mover : MonoBehaviour
     float _rotation;
     int previousPositionIndex;
     int totalDestinationNumber;
+    public Vector3 get_nextDirection
+    {
+        get
+        {
+            return current_route.get_route_direction[getNextDirectionIndex()];
+        }
+    }
+
+    public Vector3 get_previousDirection
+    {
+        get
+        {
+            return current_route.get_route_direction[getNextDirectionIndex()-1];
+        }
+    }
+    public int get_previousPositionIndex{
+        get{
+            return getNextDirectionIndex();
+        }
+    }
+    public int get_reverse_previousPositionIndex{
+        get{
+            return current_route.get_total_length - getNextDirectionIndex();
+        }
+    }
 
     [SerializeField]JourneyStage journey_stage;
     public JourneyStage isOnJourney { get { return journey_stage; } }
@@ -123,8 +148,7 @@ public class Mover : MonoBehaviour
             previousPositionIndex = index;
 
             //only pause when travel is back
-            
-            if(isNextStageIsTurn(getNextDirection()))PauseMove();
+            if(isNextStageIsTurn(getNextDirectionIndex()))PauseMove();
         }
 
         //------------------------------------------------------------------------------------
@@ -204,9 +228,9 @@ public class Mover : MonoBehaviour
     }
     bool isNextStageIsTurn(int direction_index)
     {
-        return transform.forward != current_route.get_route_direction[direction_index]; ;
+        return transform.forward != current_route.get_route_direction[direction_index];
     }
-    int getNextDirection()
+    int getNextDirectionIndex()
     {
         return previousPositionIndex < current_route.get_route_direction.Length ? previousPositionIndex : current_route.get_route_direction.Length - 1;
     }

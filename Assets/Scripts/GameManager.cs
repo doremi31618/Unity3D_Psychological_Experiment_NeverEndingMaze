@@ -3,6 +3,11 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
+//EPPlus tutorial
+//https://www.codebyamir.com/blog/create-excel-files-in-c-sharp
+//https://dotblogs.com.tw/marcus116/2015/06/20/151604
+//https://einboch.pixnet.net/blog/post/272950850-使用epplus產生excel-2007-2010檔案
+
 [RequireComponent(typeof(PlayerDataRecorder))]
 public class GameManager : MonoBehaviour
 {
@@ -21,6 +26,7 @@ public class GameManager : MonoBehaviour
     public Button backButton;
     public Button leftButton;
     public Button rightButton;
+    public Button ExportButton;
 
 
     public bool isUseGUI = true;
@@ -45,8 +51,41 @@ public class GameManager : MonoBehaviour
     {
         ListenPlayerState();
     }
+    void add_buttonListener()
+    {
+        if(goTravel!=null)
+        {
+            goTravel.onClick.AddListener(Generate);
+        }
 
-    //need to optimized 
+        if(backButton != null)
+        {
+            backButton.onClick.AddListener(GoBack);
+
+        }
+
+        if(leftButton != null)
+        {
+            leftButton.onClick.AddListener(left_direction);
+        }
+
+        if(rightButton != null)
+        {
+            rightButton.onClick.AddListener(right_direction);
+        }
+
+        if(ExportButton != null)
+        {
+            ExportButton.onClick.AddListener(Export_data_to_Excel);
+        }
+        
+    }
+    void Export_data_to_Excel()
+    {
+        m_recorder.ExportPlayerData();
+    }
+
+    //need to optimized (next version will update to event mechanism)
     void ListenPlayerState()
     {
         if (goTravel != null && backButton != null)
@@ -63,11 +102,14 @@ public class GameManager : MonoBehaviour
                     {
                         goTravel.interactable = false;
                         backButton.interactable = false;
+                        ExportButton.interactable = false;
+                        leftButton.transform.parent.gameObject.SetActive(false);
                     }
                     else
                     {
                         goTravel.interactable = true;
                         backButton.interactable = false;
+                        ExportButton.interactable = true;
                     }
                    
                     break;
@@ -75,11 +117,17 @@ public class GameManager : MonoBehaviour
                 case JourneyType.back:
                     if (player.isOnJourney == JourneyStage.OnJourney ||
                       player.isOnJourney == JourneyStage.OnJourney_goStraight ||
-                      player.isOnJourney == JourneyStage.OnJourney_onPause ||
                       player.isOnJourney == JourneyStage.OnJourney_turnAround)
                     {
                         goTravel.interactable = false;
                         backButton.interactable = false;
+                        ExportButton.interactable = false;
+                        leftButton.transform.parent.gameObject.SetActive(false);
+                       
+                    }
+                    else if(player.isOnJourney == JourneyStage.OnJourney_onPause )
+                    {
+                        leftButton.transform.parent.gameObject.SetActive(true);
                     }
                     else
                     {
@@ -91,44 +139,39 @@ public class GameManager : MonoBehaviour
                 default://JourneyStage.OnJourney || JourneyStage.OnJourney_onPause || JourneyStage.OnJourney_turnAround
                     goTravel.interactable = false;
                     backButton.interactable = false;
+                    leftButton.transform.parent.gameObject.SetActive(false);
                     break;
             }
         }
     }
-    void add_buttonListener()
-    {
-        if(goTravel!=null)
-        {
-            goTravel.onClick.AddListener(Generate);
-        }
-
-        if(backButton != null)
-        {
-            backButton.onClick.AddListener(GoBack);
-
-        }
-
-        
-    }
+   
 
     //player control event - choose left direciton 
     void left_direction()
     {
-        PlayerChooseDirection(1);
+        PlayerChooseDirection(-1);
     }
 
     //player control event - choose right direciton 
     void right_direction()
     {
-        PlayerChooseDirection(-1);
+        PlayerChooseDirection(1);
     }
 
     //record player current position & choise made by player 
     void PlayerChooseDirection(int dir)
     {
         //record player choise
-        //m_recorder.re
+        Vector3 next_direction=player.get_nextDirection;
+        Vector3 previous_direction = player.get_previousDirection;
+        int current_index=player.get_reverse_previousPositionIndex;
 
+        //match answer
+        Vector3 player_choise_direction=Vector3.Cross(previous_direction,Vector3.up * dir);
+        // float angle_between_choise_direction_and_next_direction = Vector3.Angle(next_direction,player_choise_direction);
+        
+        int isAnswerCorrect = (Vector3.Angle(next_direction,player_choise_direction) < 5 ) ? 0 : 1;
+        m_recorder.RecordPlayerChoise(current_index,isAnswerCorrect);
         //unlock pause
         player.CancelPause();
     }
