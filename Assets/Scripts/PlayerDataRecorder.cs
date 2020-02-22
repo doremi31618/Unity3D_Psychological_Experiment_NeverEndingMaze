@@ -30,10 +30,10 @@ public class PlayerDataRecorder : MonoBehaviour
         playerData.PlayerDataGenerator(route);
     }
 
-    public void RecordPlayerChoise(int index, int player_choise)
+    public void RecordPlayerChoise(int index, int player_choise, int player_choise_direction)
     {
         Result current = getCurrentResult();
-        current.route.setPlayerChoise(index, player_choise);
+        current.route.setPlayerChoise(index, player_choise,player_choise_direction);
     }
     public Result getCurrentResult()
     {
@@ -91,29 +91,55 @@ public class PlayerData
                 Vector3[] direction = _route.get_route_direction;
                 bool[] rotate = _route.get_route;
                 int[] player_answer = _route.get_player_choisies;
+                int[] player_answer_direction = _route.get_player_choisies_direction;
 
                 ExcelWorksheet worksheet = excel.Workbook.Worksheets.Add("Index_" + _results.test_index + "Length_" + _results.length + "Rotate_" + _results.rotate_times);
                 worksheet.Cells[1,1].Value = "座標";
-                worksheet.Cells[2,1].Value = "方向";
-                worksheet.Cells[3,1].Value = "是否轉彎";
-                worksheet.Cells[4,1].Value = "受測者選擇";
+                worksheet.Cells[1,2].Value = "方向";
+                worksheet.Cells[1,3].Value = "是否轉彎";
+                worksheet.Cells[1,4].Value = "受測者選擇";
+                worksheet.Cells[1,5].Value = "受測者選則的方向";
 
                 //讀取座標、寫入座標
                 for(int v=0; v< vertex.Length; v++)
                 {
-                    worksheet.Cells[1,2+v].Value = vertex[v];
+                    worksheet.Cells[2+v,1].Value = vertex[v];
                 }
 
                 for(int _index=0 ; _index<direction.Length;_index++)
                 {
                     //讀取方向、寫入方向
-                    worksheet.Cells[2,2+_index].Value = direction[_index];
+                    worksheet.Cells[2+_index,2].Value = direction[_index];
 
                     //讀取路線選擇
-                    worksheet.Cells[3,2+_index].Value = rotate[_index];
+                    worksheet.Cells[2+_index,3].Value = rotate[_index];
 
                     //讀取受測者選擇結果
-                    worksheet.Cells[4,2+_index].Value = player_answer[_index] == -1 ? "" :  player_answer[_index] + "";
+                    string answer = "";
+                    if(player_answer[_index] == 1)
+                    {
+                        answer = "正確";
+
+                    }else if(player_answer_direction[_index] == 0)
+                    {
+                        answer = "錯誤";
+                    }
+                    worksheet.Cells[2+_index,4].Value = answer;
+
+                    //讀取受測者選擇方向
+                    string direction_content = "";
+                    if(player_answer_direction[_index] == 1)
+                    {
+                        direction_content = "右邊";
+
+                    }else if(player_answer_direction[_index] == -1)
+                    {
+                        direction_content = "左邊";
+                    }
+                    worksheet.Cells[2+_index,5].Value = direction_content;
+                   
+                    
+
                 }
                 
 

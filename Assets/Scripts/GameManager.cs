@@ -171,7 +171,7 @@ public class GameManager : MonoBehaviour
         // float angle_between_choise_direction_and_next_direction = Vector3.Angle(next_direction,player_choise_direction);
         
         int isAnswerCorrect = (Vector3.Angle(next_direction,player_choise_direction) < 5 ) ? 0 : 1;
-        m_recorder.RecordPlayerChoise(current_index,isAnswerCorrect);
+        m_recorder.RecordPlayerChoise(current_index,isAnswerCorrect,dir);
         //unlock pause
         player.CancelPause();
     }

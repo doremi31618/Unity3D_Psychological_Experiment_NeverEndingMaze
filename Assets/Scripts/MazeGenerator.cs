@@ -93,7 +93,8 @@ public class MazeGenerator : MonoBehaviour
 
             player_boundary_visulizer.transform.position = player_boundary.center;
             maze_boundary_visulizer.transform.position = maze_boundary.center;
-            //check collision
+
+            //check if every buildings are still staty in boundary
             var _select_building = (from _building in building_pool
                          where !isPointInBoundary(maze_boundary, _building.transform.position)
                          select _building).ToList();
@@ -148,55 +149,55 @@ public class MazeGenerator : MonoBehaviour
         }
 
     }
-    public void RepositionBuilding(ref List<GameObject> select_buildings)
-    {
-        int index = 0;
+    // public void RepositionBuilding(ref List<GameObject> select_buildings)
+    // {
+    //     int index = 0;
 
-        switch (Direction)
-        {
-            case moveDirection.right:
+    //     switch (Direction)
+    //     {
+    //         case moveDirection.right:
                 
-                for (float z=maze_boundary.East.z- (maze_height - building_interval) / 2; z <maze_boundary.East.z + (maze_height + building_interval) / 2 || index < select_buildings.Count; z += building_interval, index += 1)
-                {
-                    select_buildings[index].transform.position = new Vector3(
-                        maze_boundary.East.x - building_interval,
-                        select_buildings[index].transform.position.y,
-                        z + building_interval);
-                }
-                break;
+    //             for (float z=maze_boundary.East.z- (maze_height - building_interval) / 2; z <maze_boundary.East.z + (maze_height + building_interval) / 2 || index < select_buildings.Count; z += building_interval, index += 1)
+    //             {
+    //                 select_buildings[index].transform.position = new Vector3(
+    //                     maze_boundary.East.x - building_interval,
+    //                     select_buildings[index].transform.position.y,
+    //                     z + building_interval);
+    //             }
+    //             break;
 
-            //case moveDirection.left:
-            //    for (float z = maze_boundary.West.z - (maze_height - building_interval) / 2; z < maze_boundary.West.z + (maze_height + building_interval) / 2 || index < select_buildings.Count; z += building_interval, index += 1)
-            //    {
-            //        select_buildings[index].transform.position = new Vector3(
-            //            maze_boundary.West.x + building_interval,
-            //            select_buildings[index].transform.position.y,
-            //            z);
-            //    }
-            //    break;
+    //         //case moveDirection.left:
+    //         //    for (float z = maze_boundary.West.z - (maze_height - building_interval) / 2; z < maze_boundary.West.z + (maze_height + building_interval) / 2 || index < select_buildings.Count; z += building_interval, index += 1)
+    //         //    {
+    //         //        select_buildings[index].transform.position = new Vector3(
+    //         //            maze_boundary.West.x + building_interval,
+    //         //            select_buildings[index].transform.position.y,
+    //         //            z);
+    //         //    }
+    //         //    break;
 
-            //case moveDirection.forward:
-            //    for (float x = maze_boundary.North.x - (maze_height - building_interval) / 2; x < maze_boundary.North.z + (maze_height + building_interval) / 2 || index < select_buildings.Count; x += building_interval, index += 1)
-            //    {
-            //        select_buildings[index].transform.position = new Vector3(
-            //            x,
-            //            select_buildings[index].transform.position.y,
-            //            maze_boundary.North.z - building_interval);
-            //    }
-            //    break;
+    //         //case moveDirection.forward:
+    //         //    for (float x = maze_boundary.North.x - (maze_height - building_interval) / 2; x < maze_boundary.North.z + (maze_height + building_interval) / 2 || index < select_buildings.Count; x += building_interval, index += 1)
+    //         //    {
+    //         //        select_buildings[index].transform.position = new Vector3(
+    //         //            x,
+    //         //            select_buildings[index].transform.position.y,
+    //         //            maze_boundary.North.z - building_interval);
+    //         //    }
+    //         //    break;
 
-            //case moveDirection.back:
-            //    for (float x = maze_boundary.South.x - (maze_height - building_interval) / 2; x < maze_boundary.South.z + (maze_height + building_interval) / 2 ||index < select_buildings.Count; x += building_interval, index += 1)
-            //    {
-            //        select_buildings[index].transform.position = new Vector3(
-            //            x,
-            //            select_buildings[index].transform.position.y,
-            //            maze_boundary.South.z);
-            //    }
-            //    break;
+    //         //case moveDirection.back:
+    //         //    for (float x = maze_boundary.South.x - (maze_height - building_interval) / 2; x < maze_boundary.South.z + (maze_height + building_interval) / 2 ||index < select_buildings.Count; x += building_interval, index += 1)
+    //         //    {
+    //         //        select_buildings[index].transform.position = new Vector3(
+    //         //            x,
+    //         //            select_buildings[index].transform.position.y,
+    //         //            maze_boundary.South.z);
+    //         //    }
+    //         //    break;
 
-        }
-    }
+    //     }
+    // }
     public Vector3 CheckMoveDirection()
     {
         Vector3 playerMovingDir = Vector3.zero;

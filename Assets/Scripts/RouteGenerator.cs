@@ -97,12 +97,14 @@ public class Route : ICloneable
     //go route value
     [SerializeField] bool[] route;
     [SerializeField] int[] player_choisies;// -1 :not choise ||  0:false || 1:correct
+    [SerializeField] int[] player_choisies_direction;// -1 :not choise ||  0:false || 1:correct
     [SerializeField] Vector3[] route_direction;
     [SerializeField] Vector3[] route_vertex;
 
     //for outside call - get Array List
     public bool[] get_route { get { return route; } }
     public int[] get_player_choisies { get { return player_choisies; } }
+    public int[] get_player_choisies_direction { get { return player_choisies_direction; } }
     public Vector3[] get_route_direction { get { return route_direction; } }
     public Vector3[] get_route_vertex { get { return route_vertex; } }
 
@@ -117,9 +119,10 @@ public class Route : ICloneable
             total_rotate_time = value;
         }
     }
-    public void setPlayerChoise(int index, int playerChoise)
+    public void setPlayerChoise(int index, int playerChoise,int playerChoiseDireciton)
     {
         player_choisies[index] = playerChoise;
+        player_choisies_direction[index] = playerChoiseDireciton;
     }
 
     public Route(int _length, int _rotate_time,Vector3 _first_dir, Vector3 _first_pos, float _interval)
@@ -132,7 +135,11 @@ public class Route : ICloneable
 
         route = new bool[total_length];
         player_choisies = new int[total_length];
-        for(int i=0; i<player_choisies.Length;i++){player_choisies[i]= -1;}//init player choise
+        player_choisies_direction = new int[total_length];
+        for(int i=0; i<player_choisies.Length;i++){
+            player_choisies[i]= -1;
+            player_choisies_direction[i]=0;
+        }//init player choise
         
         route_direction = new Vector3[total_length];
         route_vertex = new Vector3[total_length + 1];
@@ -157,7 +164,9 @@ public class Route : ICloneable
             }
             else {
                 //Debug.Log("straight times : " + _straight + " ; rotate times : " + _rotate);
-                route[i] = DeterminRotateOrStraight(ref _straight,ref _rotate);
+                bool result = DeterminRotateOrStraight(ref _straight,ref _rotate);
+                route[i] = result;
+                Debug.Log(" route : "+route[i] +" result : " + result);
             }
             
         }
@@ -206,12 +215,17 @@ public class Route : ICloneable
     //"false" is mean we need to go straight
     bool DeterminRotateOrStraight(ref int _straight,ref int _rotate)
     {
-        int range = UnityEngine.Random.Range(0, _straight + _rotate);
+        if(_rotate < 0)_rotate=0;
 
-        if(range > _rotate) _straight -= 1;
+        int range = (int)UnityEngine.Random.Range(0.5f, _straight + _rotate);
+        Debug.Log("Result : " + !(range > _rotate) +"_straight : "+ _straight + " _rotate : " + _rotate) ;
+
+        bool result = (range > _rotate) ;
+        if(result) _straight -= 1;
         else  _rotate -= 1;
-
-        return (range <= _rotate);
+        
+        
+        return !(result);
 
     }
 
