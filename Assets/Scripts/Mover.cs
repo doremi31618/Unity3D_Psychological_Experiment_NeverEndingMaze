@@ -217,9 +217,10 @@ public class Mover : MonoBehaviour
         Vector3 previous_direction = index == 0 ?
             new Vector3(-next_forward.x, next_forward.y, -next_forward.z) :
             current_route.get_route_direction[index - 1];
-
+        float _first_rotate_speed = 1;
+        if(index == 0)_first_rotate_speed = turnSpeed/2;
         //do roate 
-        float _speed = turnSpeed * Time.deltaTime;
+        float _speed = turnSpeed * Time.deltaTime * _first_rotate_speed;
         _rotation += _speed;
         _rotation = Mathf.Clamp(_rotation, 0, 1);
 

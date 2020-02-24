@@ -6,8 +6,8 @@ using System;
 public class RouteGenerator : MonoBehaviour
 {
     [Header("Adjustable Attribute")]
-    [Range(3, 10)] public int total_length = 3;
-    [Range(0, 10)] public int total_rotate_time = 1;
+    [Range(3, 20)] public int total_length = 3;
+    [Range(0, 19)] public int total_rotate_time = 1;
 
     [Header("Component setting")]
     public GUISkin gUISkin;
@@ -166,7 +166,7 @@ public class Route : ICloneable
                 //Debug.Log("straight times : " + _straight + " ; rotate times : " + _rotate);
                 bool result = DeterminRotateOrStraight(ref _straight,ref _rotate);
                 route[i] = result;
-                Debug.Log(" route : "+route[i] +" result : " + result);
+                // Debug.Log(" route : "+route[i] +" result : " + result);
             }
             
         }
@@ -217,8 +217,8 @@ public class Route : ICloneable
     {
         if(_rotate < 0)_rotate=0;
 
-        int range = (int)UnityEngine.Random.Range(0.5f, _straight + _rotate);
-        Debug.Log("Result : " + !(range > _rotate) +"_straight : "+ _straight + " _rotate : " + _rotate) ;
+        int range = Mathf.RoundToInt(UnityEngine.Random.Range(0.5f, _straight + _rotate));
+        Debug.Log("Result : " + !(range > _rotate)+" _range : "+range +" _straight : "+ _straight + " _rotate : " + _rotate) ;
 
         bool result = (range > _rotate) ;
         if(result) _straight -= 1;

@@ -50,6 +50,11 @@ public class GameManager : MonoBehaviour
     private void Update()
     {
         ListenPlayerState();
+        if (player != null)
+        {
+            player.turnSpeed = turnSpeed;
+            player.moveSpeed = moveSpeed;
+        }
     }
     void add_buttonListener()
     {
@@ -204,7 +209,7 @@ public class GameManager : MonoBehaviour
             GUI.Box(new Rect(50, 75, 350, 200), "");
 
             GUI.Label(new Rect(50, 75, 100, 50), "Route length : " + m_route_collector.total_length);
-            m_route_collector.total_length = (int)GUI.HorizontalSlider(new Rect(100, 100, 200, 50), m_route_collector.total_length, 3, 15);
+            m_route_collector.total_length = (int)GUI.HorizontalSlider(new Rect(100, 100, 200, 50), m_route_collector.total_length, 3, 20);
 
             GUI.Label(new Rect(50, 125, 100, 50), "Rotate times : " + m_route_collector.total_rotate_time);
             m_route_collector.total_rotate_time = (int)GUI.HorizontalSlider(new Rect(100, 150, 200, 50), m_route_collector.total_rotate_time, 0, m_route_collector.total_length - 1);
