@@ -14,19 +14,32 @@ public class GameManager : MonoBehaviour
     MazeGenerator m_maze;
     RouteGenerator m_route_collector;
     PlayerDataRecorder m_recorder;
+    UIManager m_UIManager;
     [Header("Player Attributes")]
     public Mover player;
     [Range(0, 5)] public float turnSpeed = 1;
-    [Range(0, 5)] public float moveSpeed = 1;
+    [Range(0, 10)] public float moveSpeed = 1;
 
     [Header("GUI setting")]
     public GUISkin guiSkin;
 
+    [Header("Slider")]
+    public Slider Length_slider;
+    public Slider Rotate_slider;
+
+    [Header("Text")]
+    public Text Length_text;
+    public Text Rotate_text;
+
+    [Header("Button")]
     public Button goTravel;
     public Button backButton;
     public Button leftButton;
     public Button rightButton;
     public Button ExportButton;
+
+    public Button StartButton;
+    public Button exitButton;
 
 
     public bool isUseGUI = true;
@@ -36,6 +49,7 @@ public class GameManager : MonoBehaviour
         m_maze = GetComponent<MazeGenerator>();
         m_route_collector = GetComponent<RouteGenerator>();
         m_recorder = GetComponent<PlayerDataRecorder>();
+        m_UIManager = GetComponent<UIManager>();
 
         if (player == null)
         {
@@ -83,6 +97,18 @@ public class GameManager : MonoBehaviour
         {
             ExportButton.onClick.AddListener(Export_data_to_Excel);
         }
+
+        if(StartButton != null)
+        {
+            UnityEngine.Events.UnityAction _event = () => m_UIManager.ChangePage(1);
+            StartButton.onClick.AddListener(_event);
+        }
+
+        if(exitButton != null)
+        {
+            UnityEngine.Events.UnityAction _event = () => m_UIManager.ChangePage(0);
+            exitButton.onClick.AddListener(_event);
+        }
         
     }
     void Export_data_to_Excel()
@@ -115,6 +141,7 @@ public class GameManager : MonoBehaviour
                         goTravel.interactable = true;
                         backButton.interactable = false;
                         ExportButton.interactable = true;
+                        leftButton.transform.parent.gameObject.SetActive(false);
                     }
                    
                     break;
@@ -202,6 +229,8 @@ public class GameManager : MonoBehaviour
 
     }
 
+
+
     private void OnGUI()
     {
         if(isUseGUI)
@@ -221,6 +250,21 @@ public class GameManager : MonoBehaviour
                     Generate();
                 }
             }
+        }
+        else
+        {
+            Length_slider.maxValue = 20;
+            Length_slider.minValue = 3;
+            m_route_collector.total_length = (int)Length_slider.value;
+            Length_text.text = (int)Length_slider.value + "";
+            // (int)Mathf.Lerp(Length_slider.minValue,Length_slider.maxValue,Length_slider.value);
+
+            Rotate_slider.maxValue = m_route_collector.total_length-1;
+            Rotate_slider.minValue = 0;
+            m_route_collector.total_rotate_time =  (int)Rotate_slider.value;
+            Rotate_text.text = (int)Rotate_slider.value+ "";
+            // (int)Mathf.Lerp(Rotate_slider.minValue,  Rotate_slider.maxValue , Rotate_slider.minValue);
+            
         }
     }
 

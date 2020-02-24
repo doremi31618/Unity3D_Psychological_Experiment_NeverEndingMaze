@@ -159,8 +159,9 @@ public class Route : ICloneable
         for (int i=0; i<total_length; i++ )
         {
             if (i == 0) {
-                route[0] = isRotateInFirstTime;
-                _straight = isRotateInFirstTime ? _straight - 1 : _straight;
+                route[0] = false;
+                _straight = _straight - 1;
+                // isRotateInFirstTime ? _straight - 1 : _straight;
             }
             else {
                 //Debug.Log("straight times : " + _straight + " ; rotate times : " + _rotate);
@@ -218,9 +219,10 @@ public class Route : ICloneable
         if(_rotate < 0)_rotate=0;
 
         int range = Mathf.RoundToInt(UnityEngine.Random.Range(0.5f, _straight + _rotate));
-        Debug.Log("Result : " + !(range > _rotate)+" _range : "+range +" _straight : "+ _straight + " _rotate : " + _rotate) ;
-
         bool result = (range > _rotate) ;
+        Debug.Log("Result : " + !(result)+" _range : "+range +" _straight : "+ _straight + " _rotate : " + _rotate) ;
+
+       
         if(result) _straight -= 1;
         else  _rotate -= 1;
         

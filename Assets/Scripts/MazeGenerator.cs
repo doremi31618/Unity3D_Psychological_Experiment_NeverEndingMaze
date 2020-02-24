@@ -14,6 +14,7 @@ public class MazeGenerator : MonoBehaviour
 
     [Header("Maze Attribute")]
     public float square_width_building_number = 12;
+    public float building_width = 10;
     public float maze_width_threshold = 0.01f;
 
     [Header("Building Attribute")]
@@ -203,6 +204,8 @@ public class MazeGenerator : MonoBehaviour
         GameObject clone = Instantiate(building_prefabs[RandomPickOne(building_prefabs.Count)]) as GameObject;
         clone.name = "building";
         clone.transform.parent = parents.transform;
+        Vector3 ori_scale = clone.transform.GetChild(0).localScale;
+        clone.transform.GetChild(0).localScale= new Vector3(building_width,ori_scale.y,building_width);
         clone.SetActive(false);
         return clone;
 
