@@ -220,7 +220,7 @@ public class Route : ICloneable
 
         int range = Mathf.RoundToInt(UnityEngine.Random.Range(0.5f, _straight + _rotate));
         bool result = (range > _rotate) ;
-        Debug.Log("Result : " + !(result)+" _range : "+range +" _straight : "+ _straight + " _rotate : " + _rotate) ;
+        // Debug.Log("Result : " + !(result)+" _range : "+range +" _straight : "+ _straight + " _rotate : " + _rotate) ;
 
        
         if(result) _straight -= 1;

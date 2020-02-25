@@ -45,7 +45,7 @@ public class UIAnimation : MonoBehaviour
 
     public void enable_all_UI_element(bool isActive)
     {
-        Debug.Log("isActive : " + isActive +" child count : " + GetComponentsInChildren<RectTransform>().Length);
+        // Debug.Log("isActive : " + isActive +" child count : " + GetComponentsInChildren<RectTransform>().Length);
 
         foreach (var item in GetComponentsInChildren<RectTransform>(true))
         {
