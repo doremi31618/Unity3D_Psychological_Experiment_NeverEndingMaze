@@ -5,18 +5,10 @@ using UnityEngine;
 public class UIAnimation : MonoBehaviour
 {
     public AnimationType type = AnimationType.enable;
+    [Tooltip("Automatically enactive at start")]public List<GameObject> Layer2;
     public enum AnimationType { Fade, slide, order_fade, enable }
     // Start is called before the first frame update
-    void Start()
-    {
-
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-
-    }
+    
     public void EndPage()
     {
         switch (type)
@@ -36,6 +28,7 @@ public class UIAnimation : MonoBehaviour
         {
             case AnimationType.enable:
                 enable_all_UI_element(true);
+                EnableLayer(false);
                 break;
             default:
                 enable_all_UI_element(true);
@@ -48,6 +41,16 @@ public class UIAnimation : MonoBehaviour
         // Debug.Log("isActive : " + isActive +" child count : " + GetComponentsInChildren<RectTransform>().Length);
 
         foreach (var item in GetComponentsInChildren<RectTransform>(true))
+        {
+            if (item == this.transform) continue;
+            item.gameObject.SetActive(isActive);
+        }
+    }
+
+    public void EnableLayer(bool isActive)
+    {
+        
+        foreach (var item in Layer2)
         {
             if (item == this.transform) continue;
             item.gameObject.SetActive(isActive);

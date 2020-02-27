@@ -60,9 +60,9 @@ public class PlayerDataRecorder : MonoBehaviour
         //     "",
         //     fileName + ".xls",
         //     "xls");
-        // StandaloneFileBrowser.SaveFilePanelAsync("Save File", "", fileName + ".xls", "xls", (string path) => { playerData.saveToExcelFile(path);});
-        var _path = StandaloneFileBrowser.SaveFilePanel("Save File", "",fileName + ".xls", "xls");
-        playerData.saveToExcelFile(_path);
+        StandaloneFileBrowser.SaveFilePanelAsync("Save File", "", fileName + ".xls", "xls", (string path) => { playerData.saveToExcelFile(path);});
+        // var _path = StandaloneFileBrowser.SaveFilePanel("Save File", "",fileName + ".xls", "xls");
+        // playerData.saveToExcelFile(_path);
 
     }
 }

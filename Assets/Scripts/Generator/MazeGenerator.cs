@@ -48,11 +48,11 @@ public class MazeGenerator : MonoBehaviour
     }
     private void Start()
     {
-        Initiate();
+        // Initiate();
     }
     private void Update()
     {
-        DynamicMazeGenerator();
+        // DynamicMazeGenerator();
     }
     public void Initiate()
     {

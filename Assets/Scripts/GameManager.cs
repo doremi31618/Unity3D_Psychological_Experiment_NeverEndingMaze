@@ -7,7 +7,7 @@ using UnityEngine.UI;
 //https://www.codebyamir.com/blog/create-excel-files-in-c-sharp
 //https://dotblogs.com.tw/marcus116/2015/06/20/151604
 //https://einboch.pixnet.net/blog/post/272950850-使用epplus產生excel-2007-2010檔案
-
+public enum GameMode { Constant, Landmark_2sides, Landmark_8sides, Manual }
 [RequireComponent(typeof(PlayerDataRecorder))]
 public class GameManager : MonoBehaviour
 {
@@ -15,13 +15,18 @@ public class GameManager : MonoBehaviour
     RouteGenerator m_route_collector;
     PlayerDataRecorder m_recorder;
     UIManager m_UIManager;
+    LandmarkManager m_landmark;
+    public GameMode gameMode = GameMode.Constant;
     [Header("Player Attributes")]
     public Mover player;
+
     [Range(0, 5)] public float turnSpeed = 1;
     [Range(0, 10)] public float moveSpeed = 1;
 
     [Header("GUI setting")]
     public GUISkin guiSkin;
+    public bool isChangeValueManually = false;
+
 
     [Header("Slider")]
     public Slider Length_slider;
@@ -40,16 +45,32 @@ public class GameManager : MonoBehaviour
 
     public Button StartButton;
     public Button exitButton;
-
+    [Header("Dropdown")]
+    public Dropdown dropdown;
 
     public bool isUseGUI = true;
 
     private void Start()
     {
+        //find component
+        GameManagerInitiate();
+
+        m_maze.Initiate();
+        m_route_collector.Initiate();
+
+        m_landmark.InitLandmark(m_maze.building_interval);
+        m_landmark.ChangeLandmarkNumber(0);
+
+        add_buttonListener();
+    }
+
+    void GameManagerInitiate()
+    {
         m_maze = GetComponent<MazeGenerator>();
         m_route_collector = GetComponent<RouteGenerator>();
         m_recorder = GetComponent<PlayerDataRecorder>();
         m_UIManager = GetComponent<UIManager>();
+        m_landmark = GetComponent<LandmarkManager>();
 
         if (player == null)
         {
@@ -57,126 +78,180 @@ public class GameManager : MonoBehaviour
             player.turnSpeed = turnSpeed;
             player.moveSpeed = moveSpeed;
         }
-
-        add_buttonListener();
     }
-
     private void Update()
     {
         ListenPlayerState();
+
         if (player != null)
         {
             player.turnSpeed = turnSpeed;
             player.moveSpeed = moveSpeed;
         }
+
+        m_maze.DynamicMazeGenerator();
     }
     void add_buttonListener()
     {
-        if(goTravel!=null)
+        if (goTravel != null)
         {
             goTravel.onClick.AddListener(Generate);
         }
 
-        if(backButton != null)
+        if (backButton != null)
         {
             backButton.onClick.AddListener(GoBack);
 
         }
 
-        if(leftButton != null)
+        if (leftButton != null)
         {
             leftButton.onClick.AddListener(left_direction);
         }
 
-        if(rightButton != null)
+        if (rightButton != null)
         {
             rightButton.onClick.AddListener(right_direction);
         }
 
-        if(ExportButton != null)
+        if (ExportButton != null)
         {
             ExportButton.onClick.AddListener(Export_data_to_Excel);
         }
 
-        if(StartButton != null)
+        if (StartButton != null)
         {
             UnityEngine.Events.UnityAction _event = () => m_UIManager.ChangePage(1);
             StartButton.onClick.AddListener(_event);
         }
 
-        if(exitButton != null)
+        if (exitButton != null)
         {
             UnityEngine.Events.UnityAction _event = () => m_UIManager.ChangePage(0);
             exitButton.onClick.AddListener(_event);
         }
-        
+
+        if (dropdown != null)
+        {
+            dropdown.onValueChanged.AddListener(changeGameMode);
+        }
+
+    }
+
+    public void changeGameMode(int mode)
+    {
+
+        int landmark_number = 0;
+        switch (mode)
+        {
+            case 0:
+                landmark_number = 0;
+                gameMode = GameMode.Constant;
+                break;
+            case 1:
+                landmark_number = 1;
+                gameMode = GameMode.Landmark_2sides;
+                break;
+            case 2:
+                landmark_number = 4;
+                gameMode = GameMode.Landmark_8sides;
+                break;
+            case 3:
+                gameMode = GameMode.Manual;
+                break;
+        }
+
+        m_landmark.ChangeLandmarkNumber(landmark_number);
+
+
+        //reset route data
+        m_route_collector.total_length = 14;
+        m_route_collector.total_rotate_time = 6;
     }
     void Export_data_to_Excel()
     {
         m_recorder.ExportPlayerData();
     }
-
+    bool isPlayerOnJourney()
+    {
+        return player.isOnJourney == JourneyStage.OnJourney ||
+                       player.isOnJourney == JourneyStage.OnJourney_goStraight ||
+                       player.isOnJourney == JourneyStage.OnJourney_onPause ||
+                       player.isOnJourney == JourneyStage.OnJourney_turnAround;
+    }
     //need to optimized (next version will update to event mechanism)
     void ListenPlayerState()
     {
-        if (goTravel != null && backButton != null)
-        {
-            //if(player.journeyType==)
-            switch (player.journeyType)
-            {
+        bool isGo = player.journeyType == JourneyType.go;
+        bool isPause = player.isOnJourney == JourneyStage.OnJourney_onPause;
+        bool isRouteDataNotEmpty = m_recorder.playerData.results.Count > 0;
+        isChangeValueManually = (gameMode == GameMode.Manual);
 
-                case JourneyType.go:
-                    if (player.isOnJourney == JourneyStage.OnJourney ||
-                       player.isOnJourney == JourneyStage.OnJourney_goStraight ||
-                       player.isOnJourney == JourneyStage.OnJourney_onPause ||
-                       player.isOnJourney == JourneyStage.OnJourney_turnAround)
-                    {
-                        goTravel.interactable = false;
-                        backButton.interactable = false;
-                        ExportButton.interactable = false;
-                        leftButton.transform.parent.gameObject.SetActive(false);
-                    }
-                    else
-                    {
-                        goTravel.interactable = true;
-                        backButton.interactable = false;
-                        ExportButton.interactable = true;
-                        leftButton.transform.parent.gameObject.SetActive(false);
-                    }
-                   
-                    break;
+        ExportButton.interactable = !isPlayerOnJourney() && isGo && isRouteDataNotEmpty;
+        dropdown.interactable = !isPlayerOnJourney() && isGo;
 
-                case JourneyType.back:
-                    if (player.isOnJourney == JourneyStage.OnJourney ||
-                      player.isOnJourney == JourneyStage.OnJourney_goStraight ||
-                      player.isOnJourney == JourneyStage.OnJourney_turnAround)
-                    {
-                        goTravel.interactable = false;
-                        backButton.interactable = false;
-                        ExportButton.interactable = false;
-                        leftButton.transform.parent.gameObject.SetActive(false);
-                       
-                    }
-                    else if(player.isOnJourney == JourneyStage.OnJourney_onPause )
-                    {
-                        leftButton.transform.parent.gameObject.SetActive(true);
-                    }
-                    else
-                    {
-                        backButton.interactable = true;
-                        goTravel.interactable = false;
-                        
-                    }
-                    break;
-                default://JourneyStage.OnJourney || JourneyStage.OnJourney_onPause || JourneyStage.OnJourney_turnAround
-                    goTravel.interactable = false;
-                    backButton.interactable = false;
-                    leftButton.transform.parent.gameObject.SetActive(false);
-                    break;
-            }
-        }
+        goTravel.interactable = isGo && !isPlayerOnJourney();
+        backButton.interactable = !isGo && !isPlayerOnJourney();
+
+        bool playerDirectionButton = !isGo && isPause && isPlayerOnJourney();
+        leftButton.transform.parent.gameObject.SetActive(playerDirectionButton);
+        m_UIManager.Manage_Pages[1].EnableLayer(isChangeValueManually);
+
+        m_landmark.isActiveLandmark(gameMode == GameMode.Landmark_2sides || gameMode == GameMode.Landmark_8sides && isPlayerOnJourney());
+
+        // //if(player.journeyType==)
+        // switch (player.journeyType)
+        // {
+
+        //     case JourneyType.go:
+        //         if (isPlayerOnJourney())
+        //         {
+        //             goTravel.interactable = false;
+        //             backButton.interactable = false;
+        //             ExportButton.interactable = false;
+        //             dropdown.interactable = false;
+        //             leftButton.transform.parent.gameObject.SetActive(false);
+        //         }
+        //         else
+        //         {
+        //             goTravel.interactable = true;
+        //             backButton.interactable = false;
+        //             ExportButton.interactable = true;
+        //             leftButton.transform.parent.gameObject.SetActive(false);
+        //         }
+
+        //         break;
+
+        //     case JourneyType.back:
+        //         if (player.isOnJourney == JourneyStage.OnJourney_onPause)
+        //         {
+        //             leftButton.transform.parent.gameObject.SetActive(true);
+        //         }
+        //         else if (isPlayerOnJourney() && (player.isOnJourney != JourneyStage.OnJourney_onPause))
+        //         {
+        //             goTravel.interactable = false;
+        //             backButton.interactable = false;
+        //             ExportButton.interactable = false;
+        //             dropdown.interactable = false;
+        //             leftButton.transform.parent.gameObject.SetActive(false);
+
+        //         }
+        //         else
+        //         {
+        //             backButton.interactable = true;
+        //             goTravel.interactable = false;
+
+        //         }
+        //         break;
+        //     default://JourneyStage.OnJourney || JourneyStage.OnJourney_onPause || JourneyStage.OnJourney_turnAround
+        //         goTravel.interactable = false;
+        //         backButton.interactable = false;
+        //         leftButton.transform.parent.gameObject.SetActive(false);
+        //         break;
+        // }
+
     }
-   
+
 
     //player control event - choose left direciton 
     void left_direction()
@@ -194,16 +269,16 @@ public class GameManager : MonoBehaviour
     void PlayerChooseDirection(int dir)
     {
         //record player choise
-        Vector3 next_direction=player.get_nextDirection;
+        Vector3 next_direction = player.get_nextDirection;
         Vector3 previous_direction = player.get_previousDirection;
-        int current_index=player.get_reverse_previousPositionIndex;
+        int current_index = player.get_reverse_previousPositionIndex;
 
         //match answer
-        Vector3 player_choise_direction=Vector3.Cross(previous_direction,Vector3.up * dir);
+        Vector3 player_choise_direction = Vector3.Cross(previous_direction, Vector3.up * dir);
         // float angle_between_choise_direction_and_next_direction = Vector3.Angle(next_direction,player_choise_direction);
-        
-        int isAnswerCorrect = (Vector3.Angle(next_direction,player_choise_direction) < 5 ) ? 0 : 1;
-        m_recorder.RecordPlayerChoise(current_index,isAnswerCorrect,dir);
+
+        int isAnswerCorrect = (Vector3.Angle(next_direction, player_choise_direction) < 5) ? 0 : 1;
+        m_recorder.RecordPlayerChoise(current_index, isAnswerCorrect, dir);
         //unlock pause
         player.CancelPause();
     }
@@ -212,16 +287,15 @@ public class GameManager : MonoBehaviour
     {
         m_route_collector.get_CurrentRoute = m_route_collector.get_CurrentRoute.DeepClone();
         m_route_collector.get_CurrentRoute.back_RouteGenerator();
-        
-        
+
+
         //m_route_collector.get_CurrentRoute
         player.startJourney(m_route_collector.get_CurrentRoute, JourneyType.back);
     }
 
     void Generate()
     {
-
-        m_route_collector.Generate();
+        m_route_collector.Generate(isChangeValueManually);
         Route current_route = m_route_collector.get_CurrentRoute;
 
         player.startJourney(current_route, JourneyType.go);
@@ -233,7 +307,7 @@ public class GameManager : MonoBehaviour
 
     private void OnGUI()
     {
-        if(isUseGUI)
+        if (isUseGUI)
         {
             GUI.Box(new Rect(50, 75, 350, 200), "");
 
@@ -253,18 +327,19 @@ public class GameManager : MonoBehaviour
         }
         else
         {
+
+
             Length_slider.maxValue = 20;
             Length_slider.minValue = 3;
-            m_route_collector.total_length = (int)Length_slider.value;
+            if (isChangeValueManually) m_route_collector.total_length = (int)Length_slider.value;
             Length_text.text = (int)Length_slider.value + "";
-            // (int)Mathf.Lerp(Length_slider.minValue,Length_slider.maxValue,Length_slider.value);
 
-            Rotate_slider.maxValue = m_route_collector.total_length-1;
+
+            Rotate_slider.maxValue = m_route_collector.total_length - 1;
             Rotate_slider.minValue = 0;
-            m_route_collector.total_rotate_time =  (int)Rotate_slider.value;
-            Rotate_text.text = (int)Rotate_slider.value+ "";
-            // (int)Mathf.Lerp(Rotate_slider.minValue,  Rotate_slider.maxValue , Rotate_slider.minValue);
-            
+            if (isChangeValueManually) m_route_collector.total_rotate_time = (int)Rotate_slider.value;
+            Rotate_text.text = (int)Rotate_slider.value + "";
+
         }
     }
 
