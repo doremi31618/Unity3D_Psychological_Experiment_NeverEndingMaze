@@ -6,6 +6,7 @@ public class UIManager : MonoBehaviour
 {
     public UIAnimation current_page;
     public List<UIAnimation> Manage_Pages;
+    
     // Start is called before the first frame update
     void Start()
     {

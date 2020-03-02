@@ -43,6 +43,7 @@ public class UIAnimation : MonoBehaviour
         foreach (var item in GetComponentsInChildren<RectTransform>(true))
         {
             if (item == this.transform) continue;
+            if(item.gameObject.name == "Template") continue;
             item.gameObject.SetActive(isActive);
         }
     }

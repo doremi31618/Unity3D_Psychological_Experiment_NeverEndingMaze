@@ -7,16 +7,24 @@ public class LandmarkManager : MonoBehaviour
     public GameObject Landmark_offset;
     public GameObject[] Landmark;
     public int landmark_logo_numbers = 1;
+    public float landmark_height = 2.5f;
     public bool isUseLandmark;
 
-    public void InitLandmark(float interval)
+    public void InitLandmark(float interval, float building_width)
     {
-        float height = Landmark[0].transform.localPosition.y;
         interval -= 0.01f;
-        Landmark[0].transform.localPosition = new Vector3(-interval / 2, height, interval / 2);
-        Landmark[1].transform.localPosition = new Vector3(-interval / 2, height, -interval / 2);
-        Landmark[2].transform.localPosition = new Vector3(interval / 2, height, -interval / 2);
-        Landmark[3].transform.localPosition = new Vector3(interval / 2, height, interval / 2);
+
+        // for(int i=0; i<Landmark.Length; i++ )
+        // {
+        //     float ori_y= Landmark[i].transform.localScale.y;
+        //     Landmark[i].transform.localScale = new Vector3(building_width,ori_y,building_width);
+
+        // }
+
+        Landmark[0].transform.localPosition = new Vector3(-interval / 2, landmark_height, interval / 2);
+        Landmark[1].transform.localPosition = new Vector3(-interval / 2, landmark_height, -interval / 2);
+        Landmark[2].transform.localPosition = new Vector3(interval / 2, landmark_height, -interval / 2);
+        Landmark[3].transform.localPosition = new Vector3(interval / 2, landmark_height, interval / 2);
 
     }
 

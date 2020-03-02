@@ -26,6 +26,7 @@ public class GameManager : MonoBehaviour
     [Header("GUI setting")]
     public GUISkin guiSkin;
     public bool isChangeValueManually = false;
+    public bool isUseLandmark = false;
 
 
     [Header("Slider")]
@@ -58,7 +59,7 @@ public class GameManager : MonoBehaviour
         m_maze.Initiate();
         m_route_collector.Initiate();
 
-        m_landmark.InitLandmark(m_maze.building_interval);
+        m_landmark.InitLandmark(m_maze.building_interval,m_maze.building_width);
         m_landmark.ChangeLandmarkNumber(0);
 
         add_buttonListener();
@@ -185,7 +186,9 @@ public class GameManager : MonoBehaviour
         bool isGo = player.journeyType == JourneyType.go;
         bool isPause = player.isOnJourney == JourneyStage.OnJourney_onPause;
         bool isRouteDataNotEmpty = m_recorder.playerData.results.Count > 0;
+
         isChangeValueManually = (gameMode == GameMode.Manual);
+        isUseLandmark = (gameMode == GameMode.Landmark_2sides || gameMode == GameMode.Landmark_8sides);
 
         ExportButton.interactable = !isPlayerOnJourney() && isGo && isRouteDataNotEmpty;
         dropdown.interactable = !isPlayerOnJourney() && isGo;
@@ -197,58 +200,8 @@ public class GameManager : MonoBehaviour
         leftButton.transform.parent.gameObject.SetActive(playerDirectionButton);
         m_UIManager.Manage_Pages[1].EnableLayer(isChangeValueManually);
 
-        m_landmark.isActiveLandmark(gameMode == GameMode.Landmark_2sides || gameMode == GameMode.Landmark_8sides && isPlayerOnJourney());
+        m_landmark.isActiveLandmark(isUseLandmark && isPlayerOnJourney());
 
-        // //if(player.journeyType==)
-        // switch (player.journeyType)
-        // {
-
-        //     case JourneyType.go:
-        //         if (isPlayerOnJourney())
-        //         {
-        //             goTravel.interactable = false;
-        //             backButton.interactable = false;
-        //             ExportButton.interactable = false;
-        //             dropdown.interactable = false;
-        //             leftButton.transform.parent.gameObject.SetActive(false);
-        //         }
-        //         else
-        //         {
-        //             goTravel.interactable = true;
-        //             backButton.interactable = false;
-        //             ExportButton.interactable = true;
-        //             leftButton.transform.parent.gameObject.SetActive(false);
-        //         }
-
-        //         break;
-
-        //     case JourneyType.back:
-        //         if (player.isOnJourney == JourneyStage.OnJourney_onPause)
-        //         {
-        //             leftButton.transform.parent.gameObject.SetActive(true);
-        //         }
-        //         else if (isPlayerOnJourney() && (player.isOnJourney != JourneyStage.OnJourney_onPause))
-        //         {
-        //             goTravel.interactable = false;
-        //             backButton.interactable = false;
-        //             ExportButton.interactable = false;
-        //             dropdown.interactable = false;
-        //             leftButton.transform.parent.gameObject.SetActive(false);
-
-        //         }
-        //         else
-        //         {
-        //             backButton.interactable = true;
-        //             goTravel.interactable = false;
-
-        //         }
-        //         break;
-        //     default://JourneyStage.OnJourney || JourneyStage.OnJourney_onPause || JourneyStage.OnJourney_turnAround
-        //         goTravel.interactable = false;
-        //         backButton.interactable = false;
-        //         leftButton.transform.parent.gameObject.SetActive(false);
-        //         break;
-        // }
 
     }
 
@@ -295,14 +248,23 @@ public class GameManager : MonoBehaviour
 
     void Generate()
     {
-        m_route_collector.Generate(isChangeValueManually);
+        m_route_collector.Generate(isChangeValueManually, isUseLandmark);
         Route current_route = m_route_collector.get_CurrentRoute;
 
+        GenerateLandmark(current_route);
         player.startJourney(current_route, JourneyType.go);
         m_recorder.RecordRouteData(current_route);
 
     }
 
+    void GenerateLandmark(Route _CurrentRoute)
+    {
+        if(isUseLandmark && !isChangeValueManually)
+        {
+            Vector3 landmark_position = _CurrentRoute.get_landmark_position;
+            m_landmark.Landmark_offset.transform.position = landmark_position;
+        }
+    }
 
 
     private void OnGUI()

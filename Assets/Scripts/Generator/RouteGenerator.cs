@@ -37,7 +37,7 @@ public class RouteGenerator : MonoBehaviour
         // m_maze = GetComponent<MazeGenerator>();
         // m_lineRenderer = GetComponent<LineRenderer>();
 
-        
+
         //generate at first 
         //Generate();
     }
@@ -46,7 +46,7 @@ public class RouteGenerator : MonoBehaviour
         m_maze = GetComponent<MazeGenerator>();
         m_lineRenderer = GetComponent<LineRenderer>();
     }
-    
+
     public void RouteVisualizer(Route _route)
     {
         m_lineRenderer.SetPositions(new Vector3[0]);
@@ -54,14 +54,14 @@ public class RouteGenerator : MonoBehaviour
         m_lineRenderer.SetPositions(_route.get_route_vertex);
     }
 
-    public void Generate(bool _isManual)
+    public void Generate(bool _isManual,bool _isUseLandmark)
     {
         float interval = m_maze.building_interval;
         Vector3 playerPosition = m_maze.Player.transform.position;
         Vector3 firstDirection = Vector3.forward;
 
-        
-        current_route = new Route(total_length, total_rotate_time, firstDirection, playerPosition, interval, _isManual);
+
+        current_route = new Route(total_length, total_rotate_time, firstDirection, playerPosition, interval, _isManual, _isUseLandmark);
 
         m_lineRenderer.enabled = isUseVisalizer;
         if (isUseVisalizer) RouteVisualizer(current_route);
@@ -83,7 +83,7 @@ public class RouteGenerator : MonoBehaviour
 
             if (GUI.Button(new Rect(100, 200, 150, 50), "Generate Route"))
             {
-                Generate(true);
+                Generate(true, false);
             }
         }
 
@@ -98,12 +98,16 @@ public class Route
     [SerializeField] int total_length;
     [SerializeField] int total_rotate_time;
     [SerializeField] bool isManual = false;
+    [SerializeField] bool isUseLandmark = false;
+
     Vector3 first_dir;
     Vector3 first_position;
     float interval;
     public bool isRotateInFirstTime;
 
     //go route value
+
+    [SerializeField] int landmark_Index = -1;
     [SerializeField] bool[] route;
     [SerializeField] int[] player_choisies;// -1 :not choise ||  0:false || 1:correct
     [SerializeField] int[] player_choisies_direction;// -1 :not choise ||  0:false || 1:correct
@@ -111,6 +115,8 @@ public class Route
     [SerializeField] Vector3[] route_vertex;
 
     //for outside call - get Array List
+    public int get_landmark_index {get{return landmark_Index;}}
+    public Vector3 get_landmark_position{get{return route_vertex[get_landmark_index];}}
     public bool[] get_route { get { return route; } }
     public int[] get_player_choisies { get { return player_choisies; } }
     public int[] get_player_choisies_direction { get { return player_choisies_direction; } }
@@ -136,7 +142,7 @@ public class Route
         player_choisies_direction[index] = playerChoiseDireciton;
     }
 
-    public Route(int _length, int _rotate_time, Vector3 _first_dir, Vector3 _first_pos, float _interval, bool _isManual)
+    public Route(int _length, int _rotate_time, Vector3 _first_dir, Vector3 _first_pos, float _interval, bool _isManual,bool _isUseLandmark)
     {
         total_length = _length;
         total_rotate_time = _rotate_time;
@@ -158,27 +164,17 @@ public class Route
 
         isRotateInFirstTime = false;
         isManual = _isManual;
-        if(isManual)RouteGenerator();
+        isUseLandmark = _isUseLandmark;
+
+        if (isManual) RouteGenerator();
         else RouteGenerator_ver2();
+
+        
     }
-
-    public void RouteGenerator_ver2()
+    
+    public void GenerateDirection()
     {
-
-        Debug.Log("route generator ver2");
-        int _length = total_length;
-        int _rotate = total_rotate_time;//rotate times 
-        int _straight = _length - _rotate;//straight times 
-
-        int rotate_interval = _length / _rotate;
-        int[] rotate_index = SpaceDistribute(_rotate,new Vector2Int(0,_length-1));
-
-        for (int i = 0; i < total_length; i++)
-        {
-           route[i] = isValueInsideRange(i,rotate_index);
-        }
-
-        for (int i = 0; i < route.Length; i++)
+         for (int i = 0; i < route.Length; i++)
         {
             Vector3 dir = new Vector3();
 
@@ -218,11 +214,40 @@ public class Route
         }
 
     }
+    public void RouteGenerator_ver2()
+    {
+
+        Debug.Log("route generator ver2");
+        int _length = total_length;
+        int _rotate = total_rotate_time;//rotate times 
+        int _straight = _length - _rotate;//straight times 
+
+        int rotate_interval = _length / _rotate;
+        int[] rotate_index = SpaceDistribute(_rotate, new Vector2Int(0, _length - 1));
+
+        if (isUseLandmark)
+        {
+            landmark_Index = (int)Mathf.Round(UnityEngine.Random.value + (rotate_index.Length - 1) / 2);
+            landmark_Index = rotate_index[landmark_Index];
+        }
+        else{
+            landmark_Index = -1;//not use
+        }
+
+        for (int i = 0; i < total_length; i++)
+        {
+            route[i] = isValueInsideRange(i, rotate_index);
+        }
+
+
+        GenerateDirection();
+
+    }
     bool isValueInsideRange(int value, int[] value_range)
     {
-        for(int i=0 ;i<value_range.Length ;i++)
+        for (int i = 0; i < value_range.Length; i++)
         {
-            if(value == value_range[i])return true;
+            if (value == value_range[i]) return true;
         }
         return false;
     }
@@ -231,15 +256,15 @@ public class Route
         int space_total_area = Mathf.Abs((int)(boundary.y - boundary.x) + 1);
 
         int[] cut_space_area = new int[cut_number + 1];
-        int extra_bonus =0;
+        int extra_bonus = 0;
         for (int i = 0; i < cut_space_area.Length; i++)
         {
             int rnd_area;
-            float random_range = UnityEngine.Random.Range(1,100);
+            float random_range = UnityEngine.Random.Range(1, 100);
 
-            if(random_range>84 && extra_bonus!=0)rnd_area=1;
-            else if(random_range>16 && random_range<84)rnd_area=0;
-            else rnd_area=-1;
+            if (random_range > 84 && extra_bonus != 0) rnd_area = 1;
+            else if (random_range > 16 && random_range < 84) rnd_area = 0;
+            else rnd_area = -1;
 
             extra_bonus -= rnd_area;
 
@@ -248,7 +273,7 @@ public class Route
         // print(array_sapce);
         int lastIndex = 0;
         int[] cut_index = new int[cut_number];
-        for(int i=0; i<cut_space_area.Length-1; i++)
+        for (int i = 0; i < cut_space_area.Length - 1; i++)
         {
             cut_index[i] = lastIndex + cut_space_area[i];
             lastIndex = cut_index[i];
@@ -377,7 +402,7 @@ public class Route
 
     public Route DeepClone()
     {
-        Route new_route = new Route(total_length, total_rotate_time, Vector3.zero, Vector3.zero, interval,isManual);
+        Route new_route = new Route(total_length, total_rotate_time, Vector3.zero, Vector3.zero, interval, isManual,isUseLandmark);
         new_route.ResetRoute(total_rotate_time, route, route_direction, route_vertex);
         return new_route;
     }
