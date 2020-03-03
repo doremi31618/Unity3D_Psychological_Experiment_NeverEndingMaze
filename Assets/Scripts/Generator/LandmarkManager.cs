@@ -9,6 +9,10 @@ public class LandmarkManager : MonoBehaviour
     public int landmark_logo_numbers = 1;
     public float landmark_height = 2.5f;
     public bool isUseLandmark;
+    public string material_texture_name = "_MainTex";
+    public Material landmark_material;
+
+    public List<Texture2D> texture2Ds;
 
     public void InitLandmark(float interval, float building_width)
     {
@@ -26,6 +30,11 @@ public class LandmarkManager : MonoBehaviour
         Landmark[2].transform.localPosition = new Vector3(interval / 2, landmark_height, -interval / 2);
         Landmark[3].transform.localPosition = new Vector3(interval / 2, landmark_height, interval / 2);
 
+    }
+
+    public void ChangeLandmarkPic(int index)
+    {
+        landmark_material.SetTexture(material_texture_name,texture2Ds[index]);
     }
 
     public void ChangeLandmarkPosition(Vector3 new_position)

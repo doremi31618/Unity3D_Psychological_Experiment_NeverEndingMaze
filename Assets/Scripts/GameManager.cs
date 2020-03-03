@@ -28,6 +28,34 @@ public class GameManager : MonoBehaviour
     public bool isChangeValueManually = false;
     public bool isUseLandmark = false;
 
+    Vector3Int mode_process_index = Vector3Int.zero;
+    public int get_current_constant_index{
+        get{
+            return mode_process_index.x;
+        }
+        set{
+            mode_process_index.x = value;
+        }
+    }
+
+    public int get_current_Landmark_2sides_index{
+        get{
+            return mode_process_index.y;
+        }
+        set{
+            mode_process_index.y = value;
+        }
+    }
+
+    public int get_current_Landmark_8sides_index{
+        get{
+            return mode_process_index.z;
+        }
+        set{
+            mode_process_index.z = value;
+        }
+    }
+
 
     [Header("Slider")]
     public Slider Length_slider;
@@ -251,10 +279,34 @@ public class GameManager : MonoBehaviour
         m_route_collector.Generate(isChangeValueManually, isUseLandmark);
         Route current_route = m_route_collector.get_CurrentRoute;
 
+        //landmark
+        record_mode_usage_count();
         GenerateLandmark(current_route);
+
+        //player data & mover 
         player.startJourney(current_route, JourneyType.go);
         m_recorder.RecordRouteData(current_route);
 
+    }
+
+    void record_mode_usage_count()
+    {
+        switch(gameMode)
+        {
+            case GameMode.Constant:
+                get_current_constant_index +=1;
+                break;
+            case GameMode.Landmark_2sides:
+                get_current_Landmark_2sides_index+=1;
+                m_landmark.ChangeLandmarkPic(get_current_Landmark_2sides_index);
+                break;
+            case GameMode.Landmark_8sides:
+                get_current_Landmark_8sides_index+=1;
+                m_landmark.ChangeLandmarkPic(get_current_Landmark_8sides_index);
+                break;
+            default:
+                break;
+        }
     }
 
     void GenerateLandmark(Route _CurrentRoute)
