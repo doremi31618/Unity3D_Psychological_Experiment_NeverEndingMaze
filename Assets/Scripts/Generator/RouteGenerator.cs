@@ -115,6 +115,9 @@ public class Route
     [SerializeField] Vector3[] route_vertex;
 
     //for outside call - get Array List
+    public bool UseLandmark{get{return isUseLandmark;}}
+    
+    public bool Manual {get{return isManual;}}
     public int get_landmark_index {get{return landmark_Index;}}
     public Vector3 get_landmark_position{get{return route_vertex[get_landmark_index];}}
     public bool[] get_route { get { return route; } }

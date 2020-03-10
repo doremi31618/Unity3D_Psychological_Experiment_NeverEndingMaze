@@ -26,6 +26,10 @@ public class PlayerDataRecorder : MonoBehaviour
         playerData.player_name = player_name = name;
         fileName = name + ".xls";
     }
+    public void RecordLandmarkType(int count_of_landmark)
+    {
+        playerData.get_newest_results.landmark_number = count_of_landmark;
+    }
     public void RecordRouteData(Route route)
     {
         playerData.PlayerDataGenerator(route);
@@ -79,6 +83,7 @@ public class PlayerData
         player_name = name;
         results = new List<Result>();
     }
+    public Result get_newest_results{get{return results[results.Count-1];}}
 
 
     public void PlayerDataGenerator(Route route)
@@ -101,8 +106,16 @@ public class PlayerData
                 bool[] rotate = _route.get_route;
                 int[] player_answer = _route.get_player_choisies;
                 int[] player_answer_direction = _route.get_player_choisies_direction;
-
-                ExcelWorksheet worksheet = excel.Workbook.Worksheets.Add("Index_" + _results.test_index + "Length_" + _results.length + "Rotate_" + _results.rotate_times);
+                int landmark_index = _route.get_landmark_index;
+                string Title = "[Constatn]_";
+                if(_results.route.UseLandmark )
+                {
+                    Title =  "[With_Landmark_"+_results.landmark_number+"]_";
+                }else if(_results.route.Manual)
+                {
+                    Title =  "[Manual]_";
+                }
+                ExcelWorksheet worksheet = excel.Workbook.Worksheets.Add(Title + "Index_" + _results.test_index + "Length_" + _results.length + "Rotate_" + _results.rotate_times);
                 worksheet.Cells[1, 1].Value = "座標";
                 worksheet.Cells[1, 2].Value = "方向";
                 worksheet.Cells[1, 3].Value = "是否轉彎";
@@ -118,6 +131,8 @@ public class PlayerData
 
                 for (int _index = 0; _index < direction.Length; _index++)
                 {
+
+
                     //讀取方向、寫入方向
                     worksheet.Cells[2 + _index, 2].Value = direction[_index];
 
@@ -170,6 +185,7 @@ public class Result
     public int test_index;
     public int length;
     public int rotate_times;
+    public int landmark_number = 0;
 
     public Route route;
 

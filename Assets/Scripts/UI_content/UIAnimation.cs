@@ -28,7 +28,7 @@ public class UIAnimation : MonoBehaviour
         {
             case AnimationType.enable:
                 enable_all_UI_element(true);
-                EnableLayer(false);
+                EnableAllLayer(false);
                 break;
             default:
                 enable_all_UI_element(true);
@@ -48,14 +48,21 @@ public class UIAnimation : MonoBehaviour
         }
     }
 
-    public void EnableLayer(bool isActive)
+    public void EnableAllLayer(bool isActive)
     {
-        
         foreach (var item in Layer2)
         {
             if (item == this.transform) continue;
             item.gameObject.SetActive(isActive);
         }
     }
+    public void EnableSingleLayer(bool isActive,int index)
+    {
+        for(int i=0; i<Layer2.Count; i++)
+        {
+            if(i == index)Layer2[i].SetActive(isActive);
+        }
+    }
+
 
 }

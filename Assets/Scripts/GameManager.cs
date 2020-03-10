@@ -16,7 +16,12 @@ public class GameManager : MonoBehaviour
     PlayerDataRecorder m_recorder;
     UIManager m_UIManager;
     LandmarkManager m_landmark;
+    public RandomModeGenorator m_random_mode_generator;
     public GameMode gameMode = GameMode.Constant;
+    public bool isUseLandmark = false;
+    public bool isUseRanodom_landmark_constant_mode = true;
+    public int random_mode_index = 0;
+    public bool change_random_mode {set{isUseRanodom_landmark_constant_mode=!isUseRanodom_landmark_constant_mode;}}
     [Header("Player Attributes")]
     public Mover player;
 
@@ -26,32 +31,41 @@ public class GameManager : MonoBehaviour
     [Header("GUI setting")]
     public GUISkin guiSkin;
     public bool isChangeValueManually = false;
-    public bool isUseLandmark = false;
+
 
     Vector3Int mode_process_index = Vector3Int.zero;
-    public int get_current_constant_index{
-        get{
+    public int get_current_constant_index
+    {
+        get
+        {
             return mode_process_index.x;
         }
-        set{
+        set
+        {
             mode_process_index.x = value;
         }
     }
 
-    public int get_current_Landmark_2sides_index{
-        get{
+    public int get_current_Landmark_2sides_index
+    {
+        get
+        {
             return mode_process_index.y;
         }
-        set{
+        set
+        {
             mode_process_index.y = value;
         }
     }
 
-    public int get_current_Landmark_8sides_index{
-        get{
+    public int get_current_Landmark_8sides_index
+    {
+        get
+        {
             return mode_process_index.z;
         }
-        set{
+        set
+        {
             mode_process_index.z = value;
         }
     }
@@ -87,11 +101,13 @@ public class GameManager : MonoBehaviour
         m_maze.Initiate();
         m_route_collector.Initiate();
 
-        m_landmark.InitLandmark(m_maze.building_interval,m_maze.building_width);
+        m_landmark.InitLandmark(m_maze.building_interval, m_maze.building_width);
         m_landmark.ChangeLandmarkNumber(0);
 
         add_buttonListener();
     }
+
+
 
     void GameManagerInitiate()
     {
@@ -100,6 +116,7 @@ public class GameManager : MonoBehaviour
         m_recorder = GetComponent<PlayerDataRecorder>();
         m_UIManager = GetComponent<UIManager>();
         m_landmark = GetComponent<LandmarkManager>();
+        m_random_mode_generator = new RandomModeGenorator();
 
         if (player == null)
         {
@@ -107,7 +124,9 @@ public class GameManager : MonoBehaviour
             player.turnSpeed = turnSpeed;
             player.moveSpeed = moveSpeed;
         }
+
     }
+
     private void Update()
     {
         ListenPlayerState();
@@ -208,7 +227,7 @@ public class GameManager : MonoBehaviour
                        player.isOnJourney == JourneyStage.OnJourney_onPause ||
                        player.isOnJourney == JourneyStage.OnJourney_turnAround;
     }
-    //need to optimized (next version will update to event mechanism)
+
     void ListenPlayerState()
     {
         bool isGo = player.journeyType == JourneyType.go;
@@ -226,7 +245,7 @@ public class GameManager : MonoBehaviour
 
         bool playerDirectionButton = !isGo && isPause && isPlayerOnJourney();
         leftButton.transform.parent.gameObject.SetActive(playerDirectionButton);
-        m_UIManager.Manage_Pages[1].EnableLayer(isChangeValueManually);
+        m_UIManager.Manage_Pages[1].EnableSingleLayer(isChangeValueManually,0);
 
         m_landmark.isActiveLandmark(isUseLandmark && isPlayerOnJourney());
 
@@ -274,8 +293,44 @@ public class GameManager : MonoBehaviour
         player.startJourney(m_route_collector.get_CurrentRoute, JourneyType.back);
     }
 
+    void read_next_random_mode()
+    {
+        int mode = m_random_mode_generator.mode_index[random_mode_index];
+        gameMode = intToGameMode(mode);
+        changeGameMode(mode);
+        ListenPlayerState();
+
+        random_mode_index++;
+        if (random_mode_index > m_random_mode_generator.total_run - 1) random_mode_index = 0;
+    }
+    GameMode intToGameMode(int index)
+    {
+
+        GameMode _gameMode_ = GameMode.Constant;
+        switch (index)
+        {
+            case 0:
+                _gameMode_ = GameMode.Constant;
+                break;
+            case 1:
+                _gameMode_ = GameMode.Landmark_2sides;
+                break;
+            case 2:
+                _gameMode_ = GameMode.Landmark_8sides;
+                break;
+            default:
+                _gameMode_ = GameMode.Manual;
+                break;
+        }
+        return _gameMode_;
+    }
+
+
     void Generate()
     {
+        //if use random mode 
+        if (isUseRanodom_landmark_constant_mode) read_next_random_mode();
+
         m_route_collector.Generate(isChangeValueManually, isUseLandmark);
         Route current_route = m_route_collector.get_CurrentRoute;
 
@@ -285,24 +340,44 @@ public class GameManager : MonoBehaviour
 
         //player data & mover 
         player.startJourney(current_route, JourneyType.go);
+
         m_recorder.RecordRouteData(current_route);
+        if (isUseLandmark)
+        {
+            int number_of_landmark = 0;
+
+            if (gameMode == GameMode.Landmark_2sides)
+            {
+                number_of_landmark = 1;
+            }
+            else
+            {
+                number_of_landmark = 4;
+            }
+            m_recorder.RecordLandmarkType(number_of_landmark);
+
+        }
+
 
     }
 
+    //[need to optimize] 
     void record_mode_usage_count()
     {
-        switch(gameMode)
+        switch (gameMode)
         {
             case GameMode.Constant:
-                get_current_constant_index +=1;
+                get_current_constant_index += 1;
                 break;
             case GameMode.Landmark_2sides:
-                get_current_Landmark_2sides_index+=1;
                 m_landmark.ChangeLandmarkPic(get_current_Landmark_2sides_index);
+                get_current_Landmark_2sides_index += 1;
+
                 break;
             case GameMode.Landmark_8sides:
-                get_current_Landmark_8sides_index+=1;
                 m_landmark.ChangeLandmarkPic(get_current_Landmark_8sides_index);
+                get_current_Landmark_8sides_index += 1;
+
                 break;
             default:
                 break;
@@ -311,7 +386,7 @@ public class GameManager : MonoBehaviour
 
     void GenerateLandmark(Route _CurrentRoute)
     {
-        if(isUseLandmark && !isChangeValueManually)
+        if (isUseLandmark && !isChangeValueManually)
         {
             Vector3 landmark_position = _CurrentRoute.get_landmark_position;
             m_landmark.Landmark_offset.transform.position = landmark_position;
@@ -341,8 +416,6 @@ public class GameManager : MonoBehaviour
         }
         else
         {
-
-
             Length_slider.maxValue = 20;
             Length_slider.minValue = 3;
             if (isChangeValueManually) m_route_collector.total_length = (int)Length_slider.value;
@@ -354,7 +427,71 @@ public class GameManager : MonoBehaviour
             if (isChangeValueManually) m_route_collector.total_rotate_time = (int)Rotate_slider.value;
             Rotate_text.text = (int)Rotate_slider.value + "";
 
+            Event e = Event.current;
+            if (e.type == EventType.KeyDown && e.shift && e.keyCode == KeyCode.Space)
+            {
+                // shift + space
+                bool isLayerActive = m_UIManager.Manage_Pages[1].Layer2[1].activeSelf;
+                m_UIManager.Manage_Pages[1].EnableSingleLayer(!isLayerActive,1);
+            }
+
         }
+    }
+
+
+}
+[System.Serializable]
+public class RandomModeGenorator
+{
+    public int total_run = 24;
+    public int constant_mode_ratio = 1;
+    public int landmarkv1_mode_ratio = 1;
+    public int landmarkv2_mode_ratio = 1;
+
+    public int[] mode_index;
+
+    public RandomModeGenorator()
+    {
+        mode_index = generate_ramdom_mode_index(total_run, constant_mode_ratio, landmarkv1_mode_ratio, landmarkv2_mode_ratio);
+    }
+
+    int[] generate_ramdom_mode_index(int total, int constant_radio, int landmarkv1_ratio, int landmarkv2_ration)
+    {
+
+        int[] new_mode_index = new int[total];
+        int total_radio = constant_radio + landmarkv1_ratio + landmarkv2_ration;
+
+        int[] mode_number = {
+            constant_radio*total/total_radio,
+            landmarkv1_ratio*total/total_radio,
+            landmarkv2_ration*total/total_radio};
+
+
+        for (int i = 0; i < total; i++)
+        {
+            int rnd = Mathf.Clamp(Random.Range(-1, mode_number.Length), 0, mode_number.Length - 1);
+
+            //check mode number 
+            while (mode_number[rnd] == 0)
+            {
+                rnd += 1;
+                if (rnd >= mode_number.Length) rnd = 0;
+                if (mode_number[rnd] == 0) continue;
+
+                bool complete = true;
+                for (int j = 0; j < mode_number.Length; j++)
+                {
+                    complete = complete && (mode_number[rnd] == 0);
+                }
+                if (complete) break;
+            }
+            Debug.Log("RND" + rnd);
+            mode_number[rnd] -= 1;
+            new_mode_index[i] = rnd;
+
+        }
+
+        return new_mode_index;
     }
 
 
