@@ -4,36 +4,26 @@ using UnityEngine;
 
 public class UIAnimation : MonoBehaviour
 {
+    public bool AutoStart;
     public AnimationType type = AnimationType.enable;
     [Tooltip("Automatically enactive at start")]public List<GameObject> Layer2;
     public enum AnimationType { Fade, slide, order_fade, enable }
     // Start is called before the first frame update
-    
+
+    public AnimationAction animationAction;
+    private void Start() {
+        if(AutoStart)StartPage();
+    }
     public void EndPage()
     {
-        switch (type)
-        {
-            case AnimationType.enable:
-                enable_all_UI_element(false);
-                break;
-            default:
-                enable_all_UI_element(false);
-                break;
-        }
+        animationAction.EndPage();
     }
 
     public void StartPage()
     {
-        switch (type)
-        {
-            case AnimationType.enable:
-                enable_all_UI_element(true);
-                EnableAllLayer(false);
-                break;
-            default:
-                enable_all_UI_element(true);
-                break;
-        }
+        Debug.Log("start page " + this.gameObject.name);
+        animationAction.StartPage();
+        EnableAllLayer(false);
     }
 
     public void enable_all_UI_element(bool isActive)

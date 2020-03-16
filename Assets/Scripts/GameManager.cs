@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
-
+using UnityEngine.Events;
 //EPPlus tutorial
 //https://www.codebyamir.com/blog/create-excel-files-in-c-sharp
 //https://dotblogs.com.tw/marcus116/2015/06/20/151604
@@ -21,7 +21,7 @@ public class GameManager : MonoBehaviour
     public bool isUseLandmark = false;
     public bool isUseRanodom_landmark_constant_mode = true;
     public int random_mode_index = 0;
-    public bool change_random_mode {set{isUseRanodom_landmark_constant_mode=!isUseRanodom_landmark_constant_mode;}}
+    public bool change_random_mode { set { isUseRanodom_landmark_constant_mode = !isUseRanodom_landmark_constant_mode; } }
     [Header("Player Attributes")]
     public Mover player;
 
@@ -74,10 +74,14 @@ public class GameManager : MonoBehaviour
     [Header("Slider")]
     public Slider Length_slider;
     public Slider Rotate_slider;
+    public Slider speed_slider;
+    public Slider rotate_speed_slider;
 
     [Header("Text")]
     public Text Length_text;
     public Text Rotate_text;
+    public Text speed_text;
+    public Text rotate_speed_text;
 
     [Header("Button")]
     public Button goTravel;
@@ -123,7 +127,17 @@ public class GameManager : MonoBehaviour
             player = GameObject.Find("Player").GetComponent<Mover>();
             player.turnSpeed = turnSpeed;
             player.moveSpeed = moveSpeed;
+
+
         }
+        speed_slider.maxValue = 20;
+        speed_slider.minValue = 1;
+        speed_slider.value = moveSpeed;
+
+        rotate_speed_slider.maxValue = 10;
+        rotate_speed_slider.minValue = 0;
+        rotate_speed_slider.value = turnSpeed;
+
 
     }
 
@@ -175,7 +189,9 @@ public class GameManager : MonoBehaviour
 
         if (exitButton != null)
         {
-            UnityEngine.Events.UnityAction _event = () => m_UIManager.ChangePage(0);
+            UnityEngine.Events.UnityAction _event = () => quit();
+
+            // UnityEngine.Events.UnityAction _event = () => m_UIManager.ChangePage(0);
             exitButton.onClick.AddListener(_event);
         }
 
@@ -185,7 +201,14 @@ public class GameManager : MonoBehaviour
         }
 
     }
-
+    public void quit()
+    {
+#if UNITY_EDITOR
+        UnityEditor.EditorApplication.isPlaying = false;
+#else
+    Application.Quit();
+#endif  
+    }
     public void changeGameMode(int mode)
     {
 
@@ -228,6 +251,29 @@ public class GameManager : MonoBehaviour
                        player.isOnJourney == JourneyStage.OnJourney_turnAround;
     }
 
+
+    public void EndGame()
+    {
+
+        m_UIManager.Manage_Pages[2].gameObject.SetActive(true);
+        m_UIManager.ChangePage(2);
+
+        UnityAction quitGame = () => quit();
+        onTimerCallOut(2.9f, quitGame);
+    }
+    public void onTimerCallOut(float time, UnityAction _action)
+    {
+
+        StartCoroutine(timer(time, _action));
+    }
+
+    IEnumerator timer(float time, UnityAction callout)
+    {
+        yield return new WaitForSeconds(time);
+        callout.Invoke();
+    }
+
+
     void ListenPlayerState()
     {
         bool isGo = player.journeyType == JourneyType.go;
@@ -245,12 +291,12 @@ public class GameManager : MonoBehaviour
 
         bool playerDirectionButton = !isGo && isPause && isPlayerOnJourney();
         leftButton.transform.parent.gameObject.SetActive(playerDirectionButton);
-        m_UIManager.Manage_Pages[1].EnableSingleLayer(isChangeValueManually,0);
+        m_UIManager.Manage_Pages[1].EnableSingleLayer(isChangeValueManually, 0);
 
         m_landmark.isActiveLandmark(isUseLandmark && isPlayerOnJourney());
 
-
     }
+
 
 
     //player control event - choose left direciton 
@@ -301,8 +347,17 @@ public class GameManager : MonoBehaviour
         ListenPlayerState();
 
         random_mode_index++;
-        if (random_mode_index > m_random_mode_generator.total_run - 1) random_mode_index = 0;
+
+        if (random_mode_index > 1) Export_data_to_Excel();
+        if (random_mode_index > m_random_mode_generator.total_run - 1)
+        {
+            Debug.Log("End game");
+            m_UIManager.Manage_Pages[2].gameObject.SetActive(true);
+            m_UIManager.ChangePage(2);
+            EndGame();
+        }
     }
+
     GameMode intToGameMode(int index)
     {
 
@@ -330,6 +385,15 @@ public class GameManager : MonoBehaviour
     {
         //if use random mode 
         if (isUseRanodom_landmark_constant_mode) read_next_random_mode();
+
+        if (random_mode_index > m_random_mode_generator.total_run - 1)
+        {
+            Debug.Log("End game");
+
+
+            EndGame();
+            return;
+        }
 
         m_route_collector.Generate(isChangeValueManually, isUseLandmark);
         Route current_route = m_route_collector.get_CurrentRoute;
@@ -427,12 +491,20 @@ public class GameManager : MonoBehaviour
             if (isChangeValueManually) m_route_collector.total_rotate_time = (int)Rotate_slider.value;
             Rotate_text.text = (int)Rotate_slider.value + "";
 
+
+            moveSpeed = speed_slider.value;
+            speed_text.text = speed_slider.value + "";
+
+
+            turnSpeed = rotate_speed_slider.value;
+            rotate_speed_text.text = rotate_speed_slider.value + "";
+
             Event e = Event.current;
             if (e.type == EventType.KeyDown && e.shift && e.keyCode == KeyCode.Space)
             {
                 // shift + space
                 bool isLayerActive = m_UIManager.Manage_Pages[1].Layer2[1].activeSelf;
-                m_UIManager.Manage_Pages[1].EnableSingleLayer(!isLayerActive,1);
+                m_UIManager.Manage_Pages[1].EnableSingleLayer(!isLayerActive, 1);
             }
 
         }
@@ -443,7 +515,7 @@ public class GameManager : MonoBehaviour
 [System.Serializable]
 public class RandomModeGenorator
 {
-    public int total_run = 24;
+    public int total_run = 15;
     public int constant_mode_ratio = 1;
     public int landmarkv1_mode_ratio = 1;
     public int landmarkv2_mode_ratio = 1;
@@ -485,7 +557,7 @@ public class RandomModeGenorator
                 }
                 if (complete) break;
             }
-            Debug.Log("RND" + rnd);
+            // Debug.Log("RND" + rnd);
             mode_number[rnd] -= 1;
             new_mode_index[i] = rnd;
 

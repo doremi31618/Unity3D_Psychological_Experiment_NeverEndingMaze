@@ -11,7 +11,9 @@ public class PlayerDataRecorder : MonoBehaviour
 {
     public string player_name;
     public string fileName = "MyExcel.xls";
+    public string DefalutFileName = "MyExcel";
     public PlayerData playerData;
+    public bool isAutoSaveDesktop = true;
     // Start is called before the first frame update
     void Start()
     {
@@ -47,26 +49,18 @@ public class PlayerDataRecorder : MonoBehaviour
     }
     public void ExportPlayerData()
     {
-//         string _path;
-
-//         //mac os Streaming Assetes address 
-// #if UNITY_STANDALONE_OSX || !UNITY_EDITOR
-//         _path = Application.dataPath + "/Resources/Data/StreamingAssets" + fileName;
-// #endif
-
-//         //Windows & Unity Editor Streaming Assetes address 
-// #if UNITY_EDITOR || UNITY_STANDALONE_WIN
-//         _path = Application.dataPath + "/StreamingAssets/" + fileName;
-// #endif
-
-        // var path =  StandaloneFileBrowser.SaveFilePanel(
-        //     "Save file as xls",
-        //     "",
-        //     fileName + ".xls",
-        //     "xls");
-        StandaloneFileBrowser.SaveFilePanelAsync("Save File", "", fileName + ".xls", "xls", (string path) => { playerData.saveToExcelFile(path);});
-        // var _path = StandaloneFileBrowser.SaveFilePanel("Save File", "",fileName + ".xls", "xls");
-        // playerData.saveToExcelFile(_path);
+        string _path_ = "";
+        if(fileName == "" || fileName == null)fileName = DefalutFileName;
+        if(isAutoSaveDesktop){
+            _path_ = Environment.GetFolderPath(Environment.SpecialFolder.Desktop) +"/"+ fileName ;
+        }
+        else{
+            var _path = StandaloneFileBrowser.SaveFilePanel("Save File", "",fileName , "xls");
+            _path_ = _path;
+        }
+        
+        if(_path_ == null || _path_ == "")return;
+        playerData.saveToExcelFile(_path_);
 
     }
 }
@@ -94,6 +88,7 @@ public class PlayerData
     }
     public void saveToExcelFile(string filePath)
     {
+        if(filePath == null)return;
         using (ExcelPackage excel = new ExcelPackage())
         {
             for (int i = 0; i < results.Count; i++)
