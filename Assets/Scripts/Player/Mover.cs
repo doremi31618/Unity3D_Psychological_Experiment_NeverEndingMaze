@@ -16,7 +16,7 @@ public class Mover : MonoBehaviour
 
     Route current_route;
 
-    float pauseTimer = 0f;
+    [SerializeField]float pauseTimer = 0f;
     float _position;//the position record
     float _rotation;
     int previousPositionIndex;
@@ -77,6 +77,7 @@ public class Mover : MonoBehaviour
 
         _position = 0f;
         _rotation = 0f;
+        pauseTimer = 0f;
         previousPositionIndex = 0;
 
         //setting journey stage start
@@ -148,7 +149,10 @@ public class Mover : MonoBehaviour
             previousPositionIndex = index;
 
             //only pause when travel is back
-            if(isNextStageIsTurn(getNextDirectionIndex()))PauseMove();
+            int get_nextDirectionIndex = getNextDirectionIndex();
+            bool ifNeedPause = (isNextStageIsTurn(get_nextDirectionIndex) || isNextStageIsStraightPause(get_nextDirectionIndex)) &&  _journeyType == JourneyType.back;
+            Debug.Log(" ifNeedPause : " + ifNeedPause + " isNextStageIsTurn : " + isNextStageIsTurn(get_nextDirectionIndex) + " isNextStageIsStraightPause : " + isNextStageIsStraightPause(get_nextDirectionIndex));
+            if(ifNeedPause)PauseMove();
         }
 
         //------------------------------------------------------------------------------------
@@ -219,6 +223,7 @@ public class Mover : MonoBehaviour
             current_route.get_route_direction[index - 1];
         float _first_rotate_speed = 1;
         if(index == 0)_first_rotate_speed = turnSpeed/2;
+
         //do roate 
         float _speed = turnSpeed * Time.deltaTime * _first_rotate_speed;
         _rotation += _speed;
@@ -229,8 +234,20 @@ public class Mover : MonoBehaviour
     }
     bool isNextStageIsTurn(int direction_index)
     {
-        return transform.forward != current_route.get_route_direction[direction_index];
+        
+        int straight_index = current_route.get_route_direction.Length - direction_index;
+
+        return (transform.forward != current_route.get_route_direction[direction_index] ||
+         current_route.isIndexInList(straight_index,current_route.get_straight_chooise_index ))
+         && _journeyType == JourneyType.back;
     }
+    bool isNextStageIsStraightPause(int direction_index)
+    {
+        int straight_index = current_route.get_route_direction.Length - direction_index;
+        return current_route.isIndexInList(straight_index,current_route.get_straight_chooise_index);
+    }
+
+    
     int getNextDirectionIndex()
     {
         return previousPositionIndex < current_route.get_route_direction.Length ? previousPositionIndex : current_route.get_route_direction.Length - 1;
@@ -245,6 +262,7 @@ public class Mover : MonoBehaviour
 
     public void PauseMove()
     {
+        
         if (journeyType != JourneyType.back) return;
         if (isTimelimitPause) pauseTimer = PauseTime;
         else pauseTimer = -1;

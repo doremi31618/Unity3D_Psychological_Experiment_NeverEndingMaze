@@ -102,22 +102,25 @@ public class PlayerData
                 int[] player_answer = _route.get_player_choisies;
                 int[] player_answer_direction = _route.get_player_choisies_direction;
                 int landmark_index = _route.get_landmark_index;
-                string Title = "[Constatn]_";
+                string Title = "[Constatn]";
                 if(_results.route.UseLandmark )
                 {
-                    Title =  "[With_Landmark_"+_results.landmark_number+"]_";
+                    Title =  "[With_Landmark_"+_results.landmark_number+"]";
                 }else if(_results.route.Manual)
                 {
-                    Title =  "[Manual]_";
+                    Title =  "[Manual]";
                 }
                 ExcelWorksheet worksheet = excel.Workbook.Worksheets.Add(Title + "Index_" + _results.test_index + "Length_" + _results.length + "Rotate_" + _results.rotate_times);
-                worksheet.Cells[1, 1].Value = "座標";
-                worksheet.Cells[1, 2].Value = "方向";
-                worksheet.Cells[1, 3].Value = "是否轉彎";
-                worksheet.Cells[1, 4].Value = "受測者選擇";
-                worksheet.Cells[1, 5].Value = "受測者選則的方向";
-                worksheet.Cells[1, 6].Value = "測試時間";
+                worksheet.Cells[1, 1].Value = "Route Coordinate";
+                worksheet.Cells[1, 2].Value = "Route Direction";
+                worksheet.Cells[1, 3].Value = "Turning or Straight";
+                worksheet.Cells[1, 4].Value = "Right or not";
+                worksheet.Cells[1, 5].Value = "ChoesnDirection";
+                worksheet.Cells[1, 6].Value = "Tested Time";
                 worksheet.Cells[2, 6].Value = DateTime.Now + "";
+                worksheet.Cells[1, 7].Value = "Mode";
+                worksheet.Cells[2, 7].Value = Title;
+
                 //讀取座標、寫入座標
                 for (int v = 0; v < vertex.Length; v++)
                 {
@@ -132,18 +135,19 @@ public class PlayerData
                     worksheet.Cells[2 + _index, 2].Value = direction[_index];
 
                     //讀取路線選擇
-                    worksheet.Cells[2 + _index, 3].Value = rotate[_index];
+                    
+                    worksheet.Cells[2 + _index, 3].Value = rotate[_index] ? "Turning" : "Straight";
 
                     //讀取受測者選擇結果
                     string answer = "";
                     if (player_answer[_index] == 1)
                     {
-                        answer = "正確";
+                        answer = "Right";
 
                     }
                     else if (player_answer[_index] == 0)
                     {
-                        answer = "錯誤";
+                        answer = "Wrong";
                     }
                     else answer = "None";
                     worksheet.Cells[2 + _index, 4].Value = answer;
@@ -152,12 +156,16 @@ public class PlayerData
                     string direction_content = "";
                     if (player_answer_direction[_index] == 1)
                     {
-                        direction_content = "右邊";
+                        direction_content = "Right";
 
                     }
                     else if (player_answer_direction[_index] == -1)
                     {
-                        direction_content = "左邊";
+                        direction_content = "Left";
+                    }
+                    else if (player_answer_direction[_index] == 2)
+                    {
+                        direction_content = "Straight";
                     }
                     else answer = "None";
                     worksheet.Cells[2 + _index, 5].Value = direction_content;

@@ -8,6 +8,7 @@ public class RouteGenerator : MonoBehaviour
     [Header("Adjustable Attribute")]
     [Range(3, 20)] public int total_length = 14;
     [Range(0, 19)] public int total_rotate_time = 6;
+    [Range(1,3)] public int strightChooseNumber=3;
 
     [Header("Component setting")]
     public GUISkin gUISkin;
@@ -62,6 +63,7 @@ public class RouteGenerator : MonoBehaviour
 
 
         current_route = new Route(total_length, total_rotate_time, firstDirection, playerPosition, interval, _isManual, _isUseLandmark);
+        current_route.CreateStraightChoise(strightChooseNumber);
 
         m_lineRenderer.enabled = isUseVisalizer;
         if (isUseVisalizer) RouteVisualizer(current_route);
@@ -106,11 +108,17 @@ public class Route
     public bool isRotateInFirstTime;
 
     //go route value
-
     [SerializeField] int landmark_Index = -1;
-    [SerializeField] bool[] route;
+    [SerializeField] bool[] route;//true means rotate , false means go straight
+    [SerializeField] int[] straight_choose;
+
+
+    //the data of player's choise
     [SerializeField] int[] player_choisies;// -1 :not choise ||  0:false || 1:correct
     [SerializeField] int[] player_choisies_direction;// -1 :not choise ||  0:false || 1:correct
+
+
+    //route data 
     [SerializeField] Vector3[] route_direction;
     [SerializeField] Vector3[] route_vertex;
 
@@ -123,6 +131,7 @@ public class Route
     public bool[] get_route { get { return route; } }
     public int[] get_player_choisies { get { return player_choisies; } }
     public int[] get_player_choisies_direction { get { return player_choisies_direction; } }
+    public int[] get_straight_chooise_index{get{return straight_choose;}}
     public Vector3[] get_route_direction { get { return route_direction; } }
     public Vector3[] get_route_vertex { get { return route_vertex; } }
 
@@ -174,7 +183,37 @@ public class Route
 
         
     }
+    public void CreateStraightChoise(int straight_number)
+    {
+        straight_choose = randomPickIndex(straight_number);
+        
+    }
     
+    int[] randomPickIndex(int number)
+    {
+        int[] new_indices = new int[number];
+        int i=0;
+        while(i<number)
+        {
+            int rnd_index = UnityEngine.Random.Range(2, route.Length-1);
+            if(!route[rnd_index] && !isIndexInList(rnd_index,new_indices))
+            {
+                new_indices[i] = rnd_index;
+                Debug.Log("stright index : " + rnd_index);
+                i++;
+            }
+        }
+        return new_indices;
+    }
+    public bool isIndexInList(int index,int[] list)
+    {
+        for(int i=0; i<list.Length; i++)
+        {
+            if(list[i] == index)return true;
+        }
+        return false;
+    }
+
     public void GenerateDirection()
     {
          for (int i = 0; i < route.Length; i++)
@@ -407,6 +446,7 @@ public class Route
     {
         Route new_route = new Route(total_length, total_rotate_time, Vector3.zero, Vector3.zero, interval, isManual,isUseLandmark);
         new_route.ResetRoute(total_rotate_time, route, route_direction, route_vertex);
+        new_route.straight_choose = straight_choose;
         return new_route;
     }
 

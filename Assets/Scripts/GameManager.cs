@@ -87,6 +87,7 @@ public class GameManager : MonoBehaviour
     public Button goTravel;
     public Button backButton;
     public Button leftButton;
+    public Button straightButton;
     public Button rightButton;
     public Button ExportButton;
 
@@ -170,6 +171,11 @@ public class GameManager : MonoBehaviour
         {
             leftButton.onClick.AddListener(left_direction);
         }
+
+        if (straightButton != null)
+        {
+            straightButton.onClick.AddListener(straight_direction);
+        } 
 
         if (rightButton != null)
         {
@@ -311,9 +317,16 @@ public class GameManager : MonoBehaviour
         PlayerChooseDirection(1);
     }
 
+    ////player control event - choose right direciton 
+    void straight_direction()
+    {
+        PlayerChooseDirection(2);
+    }
+
     //record player current position & choise made by player 
     void PlayerChooseDirection(int dir)
     {
+        
         //record player choise
         Vector3 next_direction = player.get_nextDirection;
         Vector3 previous_direction = player.get_previousDirection;
@@ -323,7 +336,9 @@ public class GameManager : MonoBehaviour
         Vector3 player_choise_direction = Vector3.Cross(previous_direction, Vector3.up * dir);
         // float angle_between_choise_direction_and_next_direction = Vector3.Angle(next_direction,player_choise_direction);
 
-        int isAnswerCorrect = (Vector3.Angle(next_direction, player_choise_direction) < 5) ? 0 : 1;
+        if(dir == 2 )player_choise_direction = previous_direction;
+        int isAnswerCorrect = (Vector3.Angle(next_direction, player_choise_direction) < 5) ? 1 : 0;
+        
         m_recorder.RecordPlayerChoise(current_index, isAnswerCorrect, dir);
         //unlock pause
         player.CancelPause();
@@ -515,6 +530,7 @@ public class GameManager : MonoBehaviour
 [System.Serializable]
 public class RandomModeGenorator
 {
+   
     public int total_run = 15;
     public int constant_mode_ratio = 1;
     public int landmarkv1_mode_ratio = 1;
