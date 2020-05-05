@@ -188,14 +188,25 @@ public class Route
         straight_choose = randomPickIndex(straight_number);
         
     }
-    
+    int get_first_rotate_index(){
+        for(int i=0; i < route.Length;i++)
+        {
+            if(route[i])
+            {
+                return i;
+            }
+        }
+        return 0;
+    }
     int[] randomPickIndex(int number)
     {
         int[] new_indices = new int[number];
-        int i=0;
+        int firstIndex = get_first_rotate_index();
+        Debug.Log(" firstIndex : "+firstIndex);
+        int i= 0;
         while(i<number)
         {
-            int rnd_index = UnityEngine.Random.Range(2, route.Length-1);
+            int rnd_index = UnityEngine.Random.Range(firstIndex, route.Length-1);
             if(!route[rnd_index] && !isIndexInList(rnd_index,new_indices))
             {
                 new_indices[i] = rnd_index;

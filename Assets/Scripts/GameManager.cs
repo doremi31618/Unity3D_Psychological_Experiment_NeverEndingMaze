@@ -333,7 +333,7 @@ public class GameManager : MonoBehaviour
         int current_index = player.get_reverse_previousPositionIndex;
 
         //match answer
-        Vector3 player_choise_direction = Vector3.Cross(previous_direction, Vector3.up * dir);
+        Vector3 player_choise_direction = Vector3.Cross(previous_direction, Vector3.down * dir);
         // float angle_between_choise_direction_and_next_direction = Vector3.Angle(next_direction,player_choise_direction);
 
         if(dir == 2 )player_choise_direction = previous_direction;
@@ -557,7 +557,8 @@ public class RandomModeGenorator
 
         for (int i = 0; i < total; i++)
         {
-            int rnd = Mathf.Clamp(Random.Range(-1, mode_number.Length), 0, mode_number.Length - 1);
+            float l = mode_number.Length;
+            int rnd = (int)Mathf.Clamp(Random.Range(-1, l), 0, l - 1);
 
             //check mode number 
             while (mode_number[rnd] == 0)

@@ -15,7 +15,7 @@ public abstract class AnimationAction : MonoBehaviour
 
     IEnumerator timer(float time, UnityAction callout){
         yield return new WaitForSeconds(time);
-        callout.Invoke();
+        if(this.gameObject.activeSelf) callout.Invoke();
     }
 
 }
