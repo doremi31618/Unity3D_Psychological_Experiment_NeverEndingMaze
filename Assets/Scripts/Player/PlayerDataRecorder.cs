@@ -116,10 +116,18 @@ public class PlayerData
                 worksheet.Cells[1, 3].Value = "Turning or Straight";
                 worksheet.Cells[1, 4].Value = "Right or not";
                 worksheet.Cells[1, 5].Value = "ChoesnDirection";
-                worksheet.Cells[1, 6].Value = "Tested Time";
-                worksheet.Cells[2, 6].Value = DateTime.Now + "";
-                worksheet.Cells[1, 7].Value = "Mode";
-                worksheet.Cells[2, 7].Value = Title;
+                int ln = _route.get_landmark_index;
+                if(ln != -1)
+                {
+                    worksheet.Cells[1, 6].Value = "landmark index";
+                    worksheet.Cells[2+ln, 6].Value = "landmark index";
+                }
+                
+                int _i=1;
+                worksheet.Cells[1, _i+6].Value = "Tested Time";
+                worksheet.Cells[2, _i+6].Value = DateTime.Now + "";
+                worksheet.Cells[1, _i+7].Value = "Mode";
+                worksheet.Cells[2, _i+7].Value = Title;
 
                 //讀取座標、寫入座標
                 for (int v = 0; v < vertex.Length; v++)
@@ -135,7 +143,6 @@ public class PlayerData
                     worksheet.Cells[2 + _index, 2].Value = direction[_index];
 
                     //讀取路線選擇
-                    
                     worksheet.Cells[2 + _index, 3].Value = rotate[_index] ? "Turning" : "Straight";
 
                     //讀取受測者選擇結果

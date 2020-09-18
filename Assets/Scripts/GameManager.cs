@@ -16,6 +16,7 @@ public class GameManager : MonoBehaviour
     PlayerDataRecorder m_recorder;
     UIManager m_UIManager;
     LandmarkManager m_landmark;
+    public float version = 1.0f;
     public RandomModeGenorator m_random_mode_generator;
     public GameMode gameMode = GameMode.Constant;
     public bool isUseLandmark = false;
@@ -82,7 +83,7 @@ public class GameManager : MonoBehaviour
     public Text Rotate_text;
     public Text speed_text;
     public Text rotate_speed_text;
-
+    public List<Text> version_title_text;
     [Header("Button")]
     public Button goTravel;
     public Button backButton;
@@ -121,7 +122,9 @@ public class GameManager : MonoBehaviour
         m_recorder = GetComponent<PlayerDataRecorder>();
         m_UIManager = GetComponent<UIManager>();
         m_landmark = GetComponent<LandmarkManager>();
-        m_random_mode_generator = new RandomModeGenorator();
+
+        //last time :  m_random_mode_generator = new RandomModeGenorator();
+        m_random_mode_generator.generate();
 
         if (player == null)
         {
@@ -138,6 +141,12 @@ public class GameManager : MonoBehaviour
         rotate_speed_slider.maxValue = 10;
         rotate_speed_slider.minValue = 0;
         rotate_speed_slider.value = turnSpeed;
+
+        foreach(var text in version_title_text)
+        {
+            text.text = "ver. " + version;
+        }
+        
 
 
     }
@@ -539,6 +548,10 @@ public class RandomModeGenorator
     public int[] mode_index;
 
     public RandomModeGenorator()
+    {
+        generate();
+    }
+    public void generate()
     {
         mode_index = generate_ramdom_mode_index(total_run, constant_mode_ratio, landmarkv1_mode_ratio, landmarkv2_mode_ratio);
     }
