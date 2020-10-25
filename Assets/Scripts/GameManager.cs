@@ -410,7 +410,9 @@ public class GameManager : MonoBehaviour
         //if use random mode 
         if (isUseRanodom_landmark_constant_mode) read_next_random_mode();
 
-        if (random_mode_index > m_random_mode_generator.total_run - 1)
+
+        //version 1.03 : if (random_mode_index > m_random_mode_generator.total_run - 1)
+        if (random_mode_index > m_random_mode_generator.total_run)
         {
             Debug.Log("End game");
 
@@ -571,7 +573,8 @@ public class RandomModeGenorator
         for (int i = 0; i < total; i++)
         {
             float l = mode_number.Length;
-            int rnd = (int)Mathf.Clamp(Random.Range(-1, l), 0, l - 1);
+            System.Random randomSeed = new System.Random();
+            int rnd = (int)Mathf.Clamp(randomSeed.Next(0,3), 0, l - 1);
 
             //check mode number 
             while (mode_number[rnd] == 0)
