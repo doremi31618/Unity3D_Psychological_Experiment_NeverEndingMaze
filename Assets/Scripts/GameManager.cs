@@ -21,7 +21,7 @@ public class GameManager : MonoBehaviour
     public GameMode gameMode = GameMode.Constant;
     public bool isUseLandmark = false;
     public bool isUseRanodom_landmark_constant_mode = true;
-    public int random_mode_index = 0;
+    public int random_mode_index = -1;
     public bool change_random_mode { set { isUseRanodom_landmark_constant_mode = !isUseRanodom_landmark_constant_mode; } }
     [Header("Player Attributes")]
     public Mover player;
@@ -84,6 +84,9 @@ public class GameManager : MonoBehaviour
     public Text speed_text;
     public Text rotate_speed_text;
     public List<Text> version_title_text;
+    public Text total_trial_text;
+    public Text current_trial_text;
+
     [Header("Button")]
     public Button goTravel;
     public Button backButton;
@@ -257,6 +260,8 @@ public class GameManager : MonoBehaviour
     void Export_data_to_Excel()
     {
         m_recorder.ExportPlayerData();
+
+        
     }
     bool isPlayerOnJourney()
     {
@@ -362,24 +367,33 @@ public class GameManager : MonoBehaviour
         //m_route_collector.get_CurrentRoute
         player.startJourney(m_route_collector.get_CurrentRoute, JourneyType.back);
     }
+    void Init_Index_UI_Inform(){
+        total_trial_text.text = m_random_mode_generator.total_run + "";
+        int show_index = (random_mode_index < 0) ? random_mode_index + 2 : random_mode_index+1;
+        current_trial_text.text = (show_index) + "";
+    }
 
     void read_next_random_mode()
     {
-        int mode = m_random_mode_generator.mode_index[random_mode_index];
-        gameMode = intToGameMode(mode);
-        changeGameMode(mode);
-        ListenPlayerState();
-
         random_mode_index++;
-
-        if (random_mode_index > 1) Export_data_to_Excel();
-        if (random_mode_index > m_random_mode_generator.total_run - 1)
+        
+        if (random_mode_index > 0) {
+            Export_data_to_Excel();
+            Init_Index_UI_Inform();
+        }
+        if (random_mode_index > m_random_mode_generator.total_run-1 )
         {
             Debug.Log("End game");
             m_UIManager.Manage_Pages[2].gameObject.SetActive(true);
             m_UIManager.ChangePage(2);
             EndGame();
+            return;
         }
+
+        int mode = m_random_mode_generator.mode_index[random_mode_index];
+        gameMode = intToGameMode(mode);
+        changeGameMode(mode);
+        ListenPlayerState();
     }
 
     GameMode intToGameMode(int index)
@@ -529,6 +543,7 @@ public class GameManager : MonoBehaviour
             if (e.type == EventType.KeyDown && e.shift && e.keyCode == KeyCode.Space)
             {
                 // shift + space
+                Init_Index_UI_Inform();
                 bool isLayerActive = m_UIManager.Manage_Pages[1].Layer2[1].activeSelf;
                 m_UIManager.Manage_Pages[1].EnableSingleLayer(!isLayerActive, 1);
             }
