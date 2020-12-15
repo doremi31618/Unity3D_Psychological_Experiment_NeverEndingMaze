@@ -1,0 +1,32 @@
+Navigation Maze Route generator algorithm
+
+Atrribute:
+(In one trial)
+1. Total length (steps): 14
+2. Total rotate times : 6
+3. number of Straight question : 3 
+
+(In one experiment)
+1. Total run : 21 
+2. Number of without landmark : 7
+3. Number of landmark1 : 7
+4. Number of landmark4 : 7
+
+
+Algorithm:
+Summarize of Route generator 
+1. First step must be straight 
+2. Take "Total length" , "Total rotate" , "number of Straight question" as input 
+3. Generate a list of rotate index by gaussian average
+   ex : (2,4,6,8,10,12) which crossroad should take turn
+   
+   the interval of each turn is at average 1~2 
+   when you get interval 1 (ex : 2, 3, 4) there's only a number between 2 and 4 
+   So the next turn is 4
+
+4. Decide turn left or turn right by random
+5. Pick three straight steps to be the question (this will auto skip index 1 )
+
+The full code of generator algorithm (you may not want to see this)
+Link : 
+https://github.com/doremi31618/Unity3D_Psychological_Experiment_NeverEndingMaze/blob/master/Assets/Scripts/Generator/RouteGenerator.cs
