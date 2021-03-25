@@ -1,6 +1,55 @@
 # Unity3D_Psychological_Maze
 a demo scene with a never ending maze which test user's navigation memory
-### Maze
-![img](https://github.com/doremi31618/Unity3D_Psychological_Experiment_NeverEndingMaze/blob/master/pic/Building.png).
+<p align="center"> 
+    <img width="50%" src="https://github.com/doremi31618/Unity3D_Psychological_Experiment_NeverEndingMaze/blob/master/pic/Building.png"></img>
+</p>
+
+### 實驗背景
+
+<p>
+隨著高齡人口不斷增多，「阿茲海默症」患者的數量逐年上升，當大腦開始崩壞這本書甚至提到「預估至2050年將有一億3500萬人受到影響，並將超過癌症成為僅次於心臟病的第二大死因，屆時我們  已經到了幾乎每個人都會認識某人罹患該疾病」。
+  
+「阿茲海默症的患者並非只是單純的“變老了”，而是大腦正在遭受攻擊！」，患者在患病過程中會先從生活中一些零星的事情開始遺忘，例如家人的名字、生活習慣，接著在疾病開始的幾年時間裡，他會擾亂情緒、空間認知、臉部辨識...所有大腦功能將會像骨牌一樣一一倒下，而在患病過程中讓家屬、看護非常棘手的問題之一是患者不會記得”回家的路“，患者通常不記得自己家的地址，甚至也不記得方向與走回去的路，使得照護者在照料時需要特別注意患者走丟的問題，而本次實驗則是在探討方向感與記憶之間的關係。
+</p>
+  
+
+### 實驗設計
+
+本次實驗的最終目的為「找出提升人們對於路徑記憶的方式」
+受測者使用電腦參與實驗，開始時程式會自動產生有六個彎的隨機路徑
+
+<img width="599" alt="random_path" src="https://user-images.githubusercontent.com/26645505/112458906-41000d80-8d98-11eb-9978-bc8d664175f5.png">
+
+並帶受測者行經該路線，實驗過程中受測者必須自己記憶經過的路徑、方向，在到達路徑終點後程式會帶受測者走回原本的起點，而受測者此時會被要求回答走回去的過程中接下來是右轉、左轉、直走，程式則會自動記錄受測者作答的答案，最後蒐集完所有測試資料再分析不同情境下的data。 
+
+<img width="594" alt="UI_1" src="https://user-images.githubusercontent.com/26645505/112458866-39d8ff80-8d98-11eb-90ff-e37f4f33edbb.png">
+
+由於本次實驗的最終目的是希望可以找出一個提升人們記憶路徑的方式，因此我們猜測阿茲海默症患者方向感變差是因為記憶力的衰退，為此我們設計了三種不同的情境來探討人們在不同情境下對於路徑的記憶。!
+
+三種情境分別為無路標、有一個路標、有四個路標，如下圖所示。
+
+<img width="588" alt="截圖 2021-03-25 下午6 31 58" src="https://user-images.githubusercontent.com/26645505/112459070-642abd00-8d98-11eb-9012-c36c44336e29.png">
+
+實驗一共進行21次，每一次的路徑都會有6個彎，並且每次路徑都會隨機從三種版本擇一
+
+<img width="533" alt="截圖 2021-03-25 下午6 32 22" src="https://user-images.githubusercontent.com/26645505/112459122-71e04280-8d98-11eb-983d-fd80be97e0c6.png">
+
+### 實驗結果
+
+
+
+在實驗的過程中，我們發現受測者依照記憶路徑的方式可以區分為以下兩種，分別是心中默念型、俯視記憶型。
+「心中默念型」：會在實驗測試時試圖利用口訣背誦來記憶經過的路線。
+「俯視記憶型」：會在心中想像由上方俯視所經過的路徑縮圖。
+
+因此為了提升路標對於記憶影響效果，我們讓受試著再進行實驗時額外背誦口訣， 來避免路標對於口訣記憶型受測者影響過小的情況。
+
+![圖片 1](https://user-images.githubusercontent.com/26645505/112459255-9a683c80-8d98-11eb-8e9f-ea67a6a134ed.png)
+
+### 實驗總結
+
+由上圖可以發現「一個路標」對於人「記憶方向感」的效果提升的最為顯著，其次為四個路標再來是無路標。推測原因可能為「一個路標」除了提示測試者下個路段為轉彎外，還會提示相對方向。而四個路標僅僅只是提示測試者下一個路段為轉彎，因此效果沒有第一個效果這麼顯著。
+
+
 ### Player view
 ![img](https://github.com/doremi31618/Unity3D_Psychological_Experiment_NeverEndingMaze/blob/master/pic/Maze.png). 
